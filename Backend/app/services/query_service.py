@@ -185,7 +185,7 @@ class QueryService:
             sql_parts.append(f"ORDER BY {', '.join(order_clauses)}")
 
         # LIMIT
-        effective_limit = max(1, min(request.limit, 5000))
+        effective_limit = max(1, min(request.limit, 10000))
         sql_parts.append(f"LIMIT {effective_limit}")
 
         final_sql = " \n".join(sql_parts)

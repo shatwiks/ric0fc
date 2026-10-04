@@ -625,7 +625,7 @@ export default function DatasetDetailModal({
                 </div>
 
                 {/* Sort & Limit */}
-                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#ececec]">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-[#ececec]">
                   <div>
                     <label className="block text-[11px] font-semibold text-[#777b86] mb-1">
                       Sort By
@@ -659,6 +659,24 @@ export default function DatasetDetailModal({
                     >
                       <option value="desc">DESC (High to Low)</option>
                       <option value="asc">ASC (Low to High)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-[#777b86] mb-1">
+                      Row Limit
+                    </label>
+                    <select
+                      value={limit}
+                      onChange={(e) => setLimit(Number(e.target.value))}
+                      className="w-full bg-[#f8f8f9] border border-[#ececec] text-xs rounded-lg px-2 py-1.5 text-[#17191c] focus:border-[#17191c] focus:outline-none font-sans"
+                    >
+                      <option value={50}>50 rows</option>
+                      <option value={100}>100 rows</option>
+                      <option value={250}>250 rows</option>
+                      <option value={500}>500 rows</option>
+                      <option value={1000}>1,000 rows</option>
+                      <option value={5000}>5,000 rows</option>
+                      <option value={10000}>10,000 rows (Max)</option>
                     </select>
                   </div>
                 </div>
