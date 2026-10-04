@@ -56,8 +56,8 @@ export default function MarketplacePage() {
             <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#17191c] tracking-[-0.66px]">
               Data Marketplace & Catalog
             </h1>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-              <ShieldCheck className="w-3.5 h-3.5" />
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 flex items-center gap-1.5 shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-[#5d2a1a]" />
               <span>Governed Enterprise Assets</span>
             </span>
           </div>

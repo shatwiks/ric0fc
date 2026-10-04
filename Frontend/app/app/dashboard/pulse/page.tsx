@@ -89,22 +89,20 @@ export default function PulsePage() {
   const infoCount = insights.filter((i) => i.severity.toLowerCase() === "info" || i.severity.toLowerCase() === "opportunity").length;
 
   return (
-    <div className="flex flex-col space-y-5 p-4 md:p-6 max-w-[1600px] mx-auto w-full">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-border">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-primary/10 text-primary">
-              <Activity className="w-5 h-5" />
-            </div>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
+    <div className="space-y-6 select-none animate-in fade-in duration-300">
+      {/* Editorial Header with Warm Wood/Musky Accents */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-2 border-b border-[#ececec]">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl sm:text-4xl font-serif font-normal text-[#17191c] tracking-[-0.66px]">
               RicozPulse
             </h1>
-            <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-              Executive Radar
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 flex items-center gap-1.5 shadow-2xs">
+              <Activity className="w-3.5 h-3.5 text-[#5d2a1a]" />
+              <span>Executive Radar</span>
             </span>
           </div>
-          <p className="text-xs md:text-sm text-muted-foreground mt-0.5">
+          <p className="text-sm text-[#777b86] max-w-2xl leading-relaxed">
             Automated intelligence radar monitoring statistical anomalies, shifts, and high-impact contributors across datasets.
           </p>
         </div>
@@ -113,12 +111,12 @@ export default function PulsePage() {
           <button
             onClick={handleGenerateInsights}
             disabled={isScanning}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg text-sm hover:bg-primary/90 disabled:opacity-50 transition-all shadow-sm"
+            className="py-2.5 px-6 rounded-full bg-[#17191c] hover:bg-black text-[#ffffff] font-normal text-xs sm:text-sm flex items-center gap-2 shadow-sm transition-all disabled:opacity-50 cursor-pointer shrink-0"
           >
             {isScanning ? (
-              <RefreshCw className="w-4 h-4 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin text-[#ffffff]" />
             ) : (
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="w-4 h-4 text-[#ffffff]" />
             )}
             <span>{isScanning ? "Scanning Datasets..." : "Scan & Generate Insights"}</span>
           </button>
@@ -126,32 +124,32 @@ export default function PulsePage() {
       </div>
 
       {statusMessage && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 text-primary text-sm">
-          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+        <div className="p-4 rounded-[20px] bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 flex items-center gap-2.5 text-xs sm:text-sm font-medium shadow-sm animate-in fade-in duration-200">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#5d2a1a]" />
           <span>{statusMessage}</span>
         </div>
       )}
 
-      {/* Filter and Overview Controls */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border border-border rounded-xl p-3.5 shadow-sm">
-        {/* Severity Tabs */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+      {/* Filter and Overview Controls Bar */}
+      <div className="p-4 rounded-[20px] bg-[#ffffff] border border-[#ececec] shadow-artifact flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Severity Tabs Pill Container */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 bg-[#fafafb] p-1.5 rounded-full border border-[#ececec]">
           <button
             onClick={() => setActiveSeverity("all")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer whitespace-nowrap ${
               activeSeverity === "all"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                ? "bg-[#17191c] text-[#ffffff] shadow-xs"
+                : "text-[#777b86] hover:text-[#17191c]"
             }`}
           >
             All Insights ({insights.length})
           </button>
           <button
             onClick={() => setActiveSeverity("critical")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeSeverity === "critical"
-                ? "bg-rose-600 text-white shadow-sm"
-                : "text-rose-600 dark:text-rose-400 hover:bg-rose-500/10"
+                ? "bg-[#5d2a1a] text-[#fbe1d1] shadow-xs"
+                : "text-[#5d2a1a] hover:bg-[#fbe1d1]/50"
             }`}
           >
             <AlertOctagon className="w-3.5 h-3.5" />
@@ -159,10 +157,10 @@ export default function PulsePage() {
           </button>
           <button
             onClick={() => setActiveSeverity("warning")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeSeverity === "warning"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                ? "bg-[#b45309] text-[#ffffff] shadow-xs"
+                : "text-[#b45309] hover:bg-amber-50"
             }`}
           >
             <AlertTriangle className="w-3.5 h-3.5" />
@@ -170,10 +168,10 @@ export default function PulsePage() {
           </button>
           <button
             onClick={() => setActiveSeverity("info")}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3.5 py-1.5 text-xs font-medium rounded-full transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
               activeSeverity === "info"
-                ? "bg-blue-600 text-white shadow-sm"
-                : "text-blue-600 dark:text-blue-400 hover:bg-blue-500/10"
+                ? "bg-[#1e293b] text-[#ffffff] shadow-xs"
+                : "text-[#777b86] hover:bg-[#f2f2f3]"
             }`}
           >
             <Info className="w-3.5 h-3.5" />
@@ -182,16 +180,16 @@ export default function PulsePage() {
         </div>
 
         {/* Dataset Filter */}
-        <div className="flex items-center gap-2">
-          <Database className="w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 bg-[#fafafb] border border-[#ececec] rounded-full px-4 py-2 shadow-sm">
+          <Database className="w-4 h-4 text-[#5d2a1a] shrink-0" />
           <select
             value={selectedDatasetId}
             onChange={(e) => setSelectedDatasetId(e.target.value)}
-            className="bg-muted/50 border border-border rounded-lg px-2.5 py-1.5 text-xs font-medium text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+            className="bg-transparent text-xs text-[#17191c] font-medium focus:outline-none cursor-pointer"
           >
             <option value="all">All Workspace Datasets</option>
             {datasets.map((ds) => (
-              <option key={ds.id} value={ds.id}>
+              <option key={ds.id} value={ds.id} className="bg-[#ffffff] text-[#17191c]">
                 {ds.name}
               </option>
             ))}
@@ -201,18 +199,18 @@ export default function PulsePage() {
 
       {/* Insights Stream */}
       {isLoading ? (
-        <div className="p-12 text-center flex flex-col items-center justify-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-primary animate-spin" />
-          <p className="text-sm font-medium text-foreground">Loading executive pulse feed...</p>
+        <div className="p-16 text-center flex flex-col items-center justify-center space-y-3">
+          <RefreshCw className="w-8 h-8 text-[#5d2a1a] animate-spin" />
+          <p className="text-sm font-medium text-[#777b86]">Loading executive pulse feed...</p>
         </div>
       ) : filteredInsights.length === 0 ? (
-        <div className="bg-card border border-border rounded-xl p-12 text-center flex flex-col items-center justify-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-muted/60 flex items-center justify-center text-muted-foreground">
-            <Activity className="w-7 h-7" />
+        <div className="bg-[#ffffff] border border-[#ececec] rounded-[24px] p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-artifact">
+          <div className="w-14 h-14 rounded-2xl bg-[#f2f2f3] flex items-center justify-center text-[#777b86]">
+            <Activity className="w-7 h-7 text-[#5d2a1a]" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground text-base">No Insights Found</h3>
-            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+            <h3 className="font-serif text-lg font-normal text-[#17191c]">No Insights Found</h3>
+            <p className="text-xs text-[#777b86] mt-1 max-w-sm leading-relaxed">
               {insights.length === 0
                 ? "No intelligence movements scanned yet. Click 'Scan & Generate Insights' to trigger automated DuckDB anomaly detection."
                 : "No insights matching the selected severity or dataset filter."}
@@ -222,14 +220,14 @@ export default function PulsePage() {
             <button
               onClick={handleGenerateInsights}
               disabled={isScanning}
-              className="px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold rounded-lg shadow-sm"
+              className="py-2 px-5 bg-[#17191c] hover:bg-black text-[#ffffff] text-xs font-normal rounded-full shadow-sm transition-colors cursor-pointer"
             >
               Scan Datasets Now
             </button>
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredInsights.map((ins) => {
             const isCritical = ins.severity.toLowerCase() === "critical";
             const isWarning = ins.severity.toLowerCase() === "warning";
@@ -238,18 +236,18 @@ export default function PulsePage() {
             return (
               <div
                 key={ins.id}
-                className="bg-card border border-border rounded-xl p-5 shadow-sm space-y-3.5 flex flex-col justify-between hover:border-primary/40 transition-colors"
+                className="bg-[#ffffff] border border-[#ececec] rounded-[24px] p-6 shadow-artifact space-y-4 flex flex-col justify-between hover:border-[#5d2a1a]/40 transition-all"
               >
-                <div className="space-y-2.5">
+                <div className="space-y-3">
                   {/* Top Badges */}
                   <div className="flex items-center justify-between gap-2">
                     <span
-                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold flex items-center gap-1 border ${
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium flex items-center gap-1 border ${
                         isCritical
-                          ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+                          ? "bg-[#fce8e6] text-[#c5221f] border-[#fad2cf]"
                           : isWarning
-                          ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
-                          : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                          ? "bg-[#fef3c7] text-[#92400e] border-[#fde68a]"
+                          : "bg-[#f2f2f3] text-[#17191c] border-[#ececec]"
                       }`}
                     >
                       {isCritical ? (
@@ -262,9 +260,9 @@ export default function PulsePage() {
                       <span>{ins.severity.toUpperCase()}</span>
                     </span>
 
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground font-medium">
-                      <Database className="w-3 h-3" />
-                      <span className="truncate max-w-[140px]">
+                    <div className="flex items-center gap-1.5 text-[11px] text-[#777b86] font-mono">
+                      <Database className="w-3.5 h-3.5 text-[#5d2a1a]" />
+                      <span className="truncate max-w-[150px]">
                         {ins.dataset_name || "Dataset"}
                       </span>
                     </div>
@@ -272,20 +270,20 @@ export default function PulsePage() {
 
                   {/* Title & Metric Pill */}
                   <div>
-                    <h3 className="text-sm md:text-base font-bold text-foreground">
+                    <h3 className="text-base sm:text-lg font-serif font-normal text-[#17191c] tracking-tight">
                       {ins.dimension_value && ins.dimension_value !== "All Segments"
                         ? `${ins.metric_name}: ${ins.dimension_value}`
                         : `${ins.metric_name} Anomaly`}
                     </h3>
-                    <div className="flex items-center gap-3 mt-1 text-xs">
-                      <span className="text-muted-foreground">
-                        Observed: <strong className="text-foreground">{ins.current_value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong>
+                    <div className="flex items-center gap-3 mt-1.5 text-xs">
+                      <span className="text-[#777b86]">
+                        Observed: <strong className="text-[#17191c] font-medium">{ins.current_value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong>
                       </span>
-                      <span className="text-muted-foreground">
-                        Baseline: <strong className="text-foreground">{ins.previous_value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong>
+                      <span className="text-[#777b86]">
+                        Baseline: <strong className="text-[#17191c] font-medium">{ins.previous_value.toLocaleString(undefined, { maximumFractionDigits: 2 })}</strong>
                       </span>
                       {ins.change_percentage !== 0 && (
-                        <span className={`font-semibold flex items-center gap-0.5 ${isPositiveChange ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
+                        <span className={`font-mono text-xs font-semibold flex items-center gap-0.5 ${isPositiveChange ? "text-[#137333]" : "text-[#c5221f]"}`}>
                           {isPositiveChange ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                           {isPositiveChange ? "+" : ""}{ins.change_percentage}%
                         </span>
@@ -294,23 +292,23 @@ export default function PulsePage() {
                   </div>
 
                   {/* Explanation Narrative */}
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs sm:text-sm text-[#777b86] leading-relaxed">
                     {ins.explanation}
                   </p>
 
                   {/* Recommended Action Callout */}
-                  <div className="p-2.5 rounded-lg bg-muted/40 border border-border/60 text-xs space-y-1">
-                    <span className="font-semibold text-foreground flex items-center gap-1">
-                      <ShieldAlert className="w-3.5 h-3.5 text-primary" />
+                  <div className="p-3.5 rounded-[14px] bg-[#fafafb] border border-[#ececec] text-xs space-y-1">
+                    <span className="font-medium text-[#17191c] flex items-center gap-1.5">
+                      <ShieldAlert className="w-3.5 h-3.5 text-[#5d2a1a]" />
                       Recommended Action:
                     </span>
-                    <p className="text-muted-foreground">{ins.recommended_action}</p>
+                    <p className="text-[#777b86] leading-relaxed">{ins.recommended_action}</p>
                   </div>
                 </div>
 
                 {/* Footer Link to Data Detective */}
-                <div className="pt-2 border-t border-border/60 flex items-center justify-between text-xs">
-                  <span className="text-[11px] text-muted-foreground">
+                <div className="pt-3 border-t border-[#f2f2f3] flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-[#979799] font-mono">
                     {new Date(ins.created_at).toLocaleDateString([], {
                       month: "short",
                       day: "numeric",
@@ -322,18 +320,18 @@ export default function PulsePage() {
                   {ins.investigation_link ? (
                     <Link
                       href={ins.investigation_link}
-                      className="text-primary hover:underline font-semibold flex items-center gap-1"
+                      className="text-[#5d2a1a] hover:underline font-medium flex items-center gap-1 group"
                     >
                       <span>Investigate in Detective</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   ) : (
                     <Link
                       href="/dashboard/data-detective"
-                      className="text-primary hover:underline font-semibold flex items-center gap-1"
+                      className="text-[#5d2a1a] hover:underline font-medium flex items-center gap-1 group"
                     >
                       <span>Data Detective</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
                   )}
                 </div>

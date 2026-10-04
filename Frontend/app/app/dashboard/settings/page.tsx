@@ -39,7 +39,7 @@ export default function SettingsPage() {
           </div>
           <div className="p-3.5 rounded-2xl bg-[#f8f8f9] border border-[#ececec]">
             <span className="text-[#777b86] block mb-1">Account Status</span>
-            <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-xs border border-emerald-200 inline-block">
+            <span className="px-3 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a] font-semibold text-xs border border-[#5d2a1a]/20 inline-block shadow-2xs">
               Active
             </span>
           </div>
