@@ -1,0 +1,22 @@
+# Database data and logs
+Database/data/
+Database/postgres.log
+*.log
+
+# Python
+Backend/.venv/
+Backend/__pycache__/
+Backend/*/__pycache__/
+Backend/*/*/__pycache__/
+*.pyc
+.env
+Backend/.env
+
+# Node
+node_modules/
+Frontend/app/node_modules/
+Frontend/app/.next/
+Backend/uploads/*
+!Backend/uploads/.gitkeep
+.agents/tasks/
+.turbo/
