@@ -17,7 +17,7 @@ export default function MarketingLandingPage() {
   const [isContactOpen, setIsContactOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#ffffff] text-[#17191c] flex flex-col selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">
+    <div suppressHydrationWarning className="min-h-screen bg-[#ffffff] text-[#17191c] flex flex-col selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">
       {/* Top Editorial Navigation */}
       <Navbar onOpenContact={() => setIsContactOpen(true)} />
 

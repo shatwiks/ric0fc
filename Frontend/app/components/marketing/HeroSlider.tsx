@@ -29,8 +29,9 @@ export interface HeroSliderProps {
 const SLIDES = [
   {
     id: "1.00",
-    step: "1.00",
-    tabLabel: "Semantic Platform",
+    numeral: "I",
+    step: "ACT I",
+    tabLabel: "Semantic Core",
     tagline: "Semantic platform",
     heading: "Ship metrics, not dashboards",
     italicWord: "not dashboards",
@@ -40,7 +41,8 @@ const SLIDES = [
   },
   {
     id: "2.00",
-    step: "2.00",
+    numeral: "II",
+    step: "ACT II",
     tabLabel: "Governed Trust",
     tagline: "Steep AI & Reports",
     heading: "Answers you can trust",
@@ -51,8 +53,9 @@ const SLIDES = [
   },
   {
     id: "3.00",
-    step: "3.00",
-    tabLabel: "Deep Analysis",
+    numeral: "III",
+    step: "ACT III",
+    tabLabel: "Deep Intelligence",
     tagline: "Steep AI",
     heading: "Unlock deep analysis",
     italicWord: "deep analysis",
@@ -62,7 +65,8 @@ const SLIDES = [
   },
   {
     id: "4.00",
-    step: "4.00",
+    numeral: "IV",
+    step: "ACT IV",
     tabLabel: "Warm Editorial",
     tagline: "Editorial Analytics",
     heading: "Serif analytics on warm paper",
@@ -176,7 +180,7 @@ export default function HeroSlider({ onOpenContact }: HeroSliderProps) {
           <div className="flex items-center gap-1.5 font-mono text-xs text-[#777b86]">
             <span className="text-[#17191c] font-semibold">{slide.step}</span>
             <span>/</span>
-            <span>04.00</span>
+            <span>ACT IV</span>
           </div>
 
           <div className="flex items-center gap-1">

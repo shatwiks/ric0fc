@@ -12,9 +12,11 @@ interface NavbarProps {
 export default function Navbar({ onOpenContact }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isPastHero, setIsPastHero] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       // Past full-screen hero (~600px)
       setIsPastHero(window.scrollY > 500);
@@ -99,7 +101,7 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
             Book a demo
           </button>
 
-          {isAuthenticated ? (
+          {mounted && isAuthenticated ? (
             <Link
               href="/dashboard"
               className={`px-5 py-2 rounded-full text-sm font-normal transition-all flex items-center gap-1.5 shadow-sm ${
@@ -127,7 +129,7 @@ export default function Navbar({ onOpenContact }: NavbarProps) {
 
         {/* Mobile menu toggle */}
         <div className="flex md:hidden items-center gap-2">
-          {isAuthenticated ? (
+          {mounted && isAuthenticated ? (
             <Link
               href="/dashboard"
               className={`px-3 py-1.5 rounded-full text-xs font-normal ${

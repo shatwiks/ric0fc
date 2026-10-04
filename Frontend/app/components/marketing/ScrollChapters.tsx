@@ -18,10 +18,38 @@ import {
 import TextReveal from "./TextReveal";
 
 const CHAPTERS = [
-  { id: "chapter-1", step: "1.00", label: "Semantic Platform" },
-  { id: "chapter-2", step: "2.00", label: "Governed Trust" },
-  { id: "chapter-3", step: "3.00", label: "Deep Analysis" },
-  { id: "chapter-4", step: "4.00", label: "Warm Editorial" },
+  {
+    id: "chapter-1",
+    numeral: "I",
+    badgeLabel: "CHAPTER I",
+    title: "THE SEMANTIC CORE",
+    label: "Semantic Layer",
+    dotColor: "bg-emerald-500",
+  },
+  {
+    id: "chapter-2",
+    numeral: "II",
+    badgeLabel: "CHAPTER II",
+    title: "GOVERNED TRUST",
+    label: "Governed Trust",
+    dotColor: "bg-sky-500",
+  },
+  {
+    id: "chapter-3",
+    numeral: "III",
+    badgeLabel: "CHAPTER III",
+    title: "DEEP INTELLIGENCE",
+    label: "Deep Analysis",
+    dotColor: "bg-violet-500",
+  },
+  {
+    id: "chapter-4",
+    numeral: "IV",
+    badgeLabel: "CHAPTER IV",
+    title: "WARM EDITORIAL PRINT",
+    label: "Warm Editorial",
+    dotColor: "bg-amber-600",
+  },
 ];
 
 export default function ScrollChapters() {
@@ -51,41 +79,67 @@ export default function ScrollChapters() {
 
   return (
     <div className="relative w-full bg-[#ffffff] text-[#17191c] overflow-hidden">
-      {/* Sticky Scroll Progress HUD Pill Bar */}
+      {/* Sticky Scroll Progress Double-Bezel Floating Dock */}
       <div className="sticky top-20 z-30 flex justify-center pointer-events-none py-3">
-        <div className="pointer-events-auto flex items-center gap-1.5 p-1.5 rounded-full bg-[#f2f2f3]/90 backdrop-blur-md border border-[#ececec] shadow-sm">
+        <nav
+          aria-label="Story Chapters"
+          className="pointer-events-auto p-1.5 rounded-full bg-white/80 backdrop-blur-2xl border border-black/[0.08] shadow-[0_12px_36px_-6px_rgba(23,25,28,0.08),0_2px_6px_rgba(0,0,0,0.03)] ring-1 ring-black/[0.03] flex items-center gap-1"
+        >
           {CHAPTERS.map((ch) => {
             const isActive = activeChapter === ch.id;
             return (
               <a
                 key={ch.id}
                 href={`#${ch.id}`}
-                className={`px-3.5 py-1 rounded-full text-xs font-normal transition-all flex items-center gap-1.5 cursor-pointer ${
-                  isActive
-                    ? "bg-[#17191c] text-[#ffffff] shadow-sm"
-                    : "text-[#777b86] hover:text-[#17191c] hover:bg-[#ffffff]/80"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const el = document.getElementById(ch.id);
+                  if (el) {
+                    const yOffset = -90;
+                    const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                    window.scrollTo({ top: y, behavior: "smooth" });
+                    setActiveChapter(ch.id);
+                  }
+                }}
+                className={`relative px-4 py-1.5 rounded-full text-xs font-normal transition-colors duration-200 flex items-center gap-2 cursor-pointer select-none ${
+                  isActive ? "text-white" : "text-[#777b86] hover:text-[#17191c]"
                 }`}
               >
-                <span className="font-mono text-[10px] opacity-75">{ch.step}</span>
-                <span className="hidden sm:inline">{ch.label}</span>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeChapterPill"
+                    className="absolute inset-0 rounded-full bg-[#17191c] shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.12)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-1.5">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-transform ${ch.dotColor} ${
+                      isActive ? "scale-110 shadow-[0_0_8px_currentColor]" : "opacity-60"
+                    }`}
+                  />
+                  <span className="font-mono text-[10px] tracking-wider uppercase opacity-80">{ch.numeral}</span>
+                  <span className="hidden sm:inline font-medium tracking-tight text-[12px]">{ch.label}</span>
+                </span>
               </a>
             );
           })}
-        </div>
+        </nav>
       </div>
 
       {/* ========================================================================= */}
-      {/* CHAPTER 1.00: SEMANTIC PLATFORM                                           */}
+      {/* CHAPTER 1: SEMANTIC PLATFORM                                              */}
       {/* ========================================================================= */}
       <section
         id="chapter-1"
         className="py-24 sm:py-32 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12"
       >
         <div className="space-y-4 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f2f2f3] text-xs font-mono text-[#777b86]">
-            <span>1.00</span>
-            <span>/</span>
-            <span>SEMANTIC PLATFORM</span>
+          <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#f2f2f3] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-semibold text-[#5d2a1a]">CHAPTER I</span>
+            <span className="text-[#a1a1aa]">/</span>
+            <span className="text-[#52525b] font-medium tracking-[0.16em]">THE SEMANTIC CORE</span>
           </div>
 
           <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#17191c] tracking-[-1.5px] leading-[1.15]">
@@ -170,10 +224,11 @@ export default function ScrollChapters() {
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="space-y-4 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ffffff] border border-[#ececec] text-xs font-mono text-[#777b86]">
-              <span>2.00</span>
-              <span>/</span>
-              <span>GOVERNED TRUST</span>
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#ffffff] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[0_2px_8px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.8)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+              <span className="font-semibold text-[#5d2a1a]">CHAPTER II</span>
+              <span className="text-[#a1a1aa]">/</span>
+              <span className="text-[#52525b] font-medium tracking-[0.16em]">GOVERNED TRUST</span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#17191c] tracking-[-1.5px] leading-[1.15]">
@@ -346,10 +401,11 @@ export default function ScrollChapters() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           {/* Left Column: Text Reveal */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f2f2f3] text-xs font-mono text-[#777b86]">
-              <span>3.00</span>
-              <span>/</span>
-              <span>DEEP ANALYSIS</span>
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#f2f2f3] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+              <span className="font-semibold text-[#5d2a1a]">CHAPTER III</span>
+              <span className="text-[#a1a1aa]">/</span>
+              <span className="text-[#52525b] font-medium tracking-[0.16em]">DEEP INTELLIGENCE</span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#17191c] tracking-[-1.5px] leading-[1.12]">
@@ -487,10 +543,11 @@ export default function ScrollChapters() {
           className="relative rounded-[28px] bg-[#fbe1d1] text-[#5d2a1a] p-8 sm:p-12 lg:p-16 overflow-hidden space-y-10"
         >
           <div className="max-w-2xl space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#5d2a1a]/10 text-xs font-mono text-[#5d2a1a]">
-              <span>4.00</span>
-              <span>/</span>
-              <span>WARM EDITORIAL</span>
+            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#5d2a1a]/10 border border-[#5d2a1a]/20 text-[11px] font-mono tracking-widest uppercase text-[#5d2a1a] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
+              <span className="font-semibold text-[#5d2a1a]">CHAPTER IV</span>
+              <span className="text-[#5d2a1a]/40">/</span>
+              <span className="text-[#5d2a1a]/90 font-medium tracking-[0.16em]">WARM EDITORIAL PRINT</span>
             </div>
 
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-normal text-[#5d2a1a] tracking-[-1.5px] leading-[1.12]">

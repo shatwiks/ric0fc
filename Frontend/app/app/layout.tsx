@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${signifier.variable} ${sohne.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-[#ffffff] text-[#17191c] antialiased selection:bg-[#fbe1d1] selection:text-[#5d2a1a]">
+    <html lang="en" className={`${signifier.variable} ${sohne.variable} h-full`} suppressHydrationWarning>
+      <body className="min-h-full flex flex-col bg-[#ffffff] text-[#17191c] antialiased selection:bg-[#fbe1d1] selection:text-[#5d2a1a]" suppressHydrationWarning>
         {children}
       </body>
     </html>
