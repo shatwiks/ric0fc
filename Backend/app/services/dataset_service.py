@@ -2,6 +2,10 @@ import os
 import re
 import uuid
 import duckdb
+import datetime
+import decimal
+import math
+import logging
 from typing import Optional, List, Tuple
 from fastapi import UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,6 +17,69 @@ from app.models.auth import User
 from app.models.data import Dataset, DatasetColumn
 from app.schemas.dataset import DatasetResponse, DatasetColumnResponse, DatasetPreviewResponse
 from app.services.audit_service import log_audit_event
+
+logger = logging.getLogger(__name__)
+
+def serialize_sample_value(val):
+    """Recursively converts DuckDB / Python objects to JSON-serializable primitives for PostgreSQL JSONB."""
+    if val is None:
+        return None
+    if isinstance(val, (datetime.date, datetime.datetime, datetime.time)):
+        return val.isoformat()
+    if isinstance(val, decimal.Decimal):
+        return float(val)
+    if isinstance(val, float):
+        if math.isnan(val) or math.isinf(val):
+            return None
+        return val
+    if isinstance(val, (int, str, bool)):
+        return val
+    if hasattr(val, "item"):  # numpy / duckdb scalar
+        try:
+            return serialize_sample_value(val.item())
+        except Exception:
+            pass
+    return str(val)
+
+def sanitize_error_message(err: Exception) -> str:
+    """Sanitizes server-side exception details to protect against internal information leakage."""
+    msg = str(err)
+
+    if "Object of type" in msg and "is not JSON serializable" in msg:
+        return "Data formatting error: one or more column values could not be serialized."
+    if "CSV does not contain any valid columns" in msg:
+        return "CSV file does not contain any valid columns or headers."
+    if "is empty (0 bytes)" in msg:
+        return "Uploaded CSV file is empty (0 bytes)."
+    if "exceeds maximum allowed size" in msg:
+        return "Uploaded file exceeds the maximum allowed size of 50 MB."
+    if "Invalid file format" in msg:
+        return "Invalid file format. Only CSV (.csv) files are supported."
+
+    # Strip SQL query dumps and parameters
+    if "[SQL:" in msg:
+        msg = msg.split("[SQL:")[0].strip()
+
+    # Strip filesystem paths (both Windows and Unix)
+    msg = re.sub(r'[A-Za-z]:[\\/][^\s\'"]+', '[file]', msg)
+    msg = re.sub(r'/[a-zA-Z0-9_\.\-]+/[a-zA-Z0-9_\.\-]+[^\s\'"]*', '[file]', msg)
+
+    # Strip parameter dumps and UUIDs
+    msg = re.sub(r'UUID\([^\)]+\)', '[id]', msg)
+    msg = re.sub(r'0x[0-9a-fA-F]+', '', msg)
+    msg = re.sub(r'\[parameters:[^\]]*\]', '', msg, flags=re.DOTALL)
+
+    # Strip database connection details & internal exception types
+    msg = re.sub(r'postgresql(\+[a-z]+)?://[^\s]+', '[db_connection]', msg)
+    msg = re.sub(r'asyncpg\.exceptions\.[A-Za-z]+', 'DatabaseError', msg)
+    msg = re.sub(r'sqlalchemy\.[A-Za-z\.]+', 'DatabaseError', msg)
+
+    # Clean whitespace
+    msg = " ".join(msg.split())
+    if not msg or len(msg) > 180 or "Traceback" in msg:
+        return "Failed to parse CSV file: Invalid formatting or corrupted rows."
+
+    return msg
 
 def sanitize_filename(filename: str) -> str:
     base = os.path.basename(filename)
@@ -79,7 +146,8 @@ class DatasetService:
                 os.remove(dest_path)
             if isinstance(e, HTTPException):
                 raise e
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to write file: {str(e)}")
+            logger.exception("Failed to write uploaded file: %s", e)
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to store uploaded file on server.")
 
         if total_size == 0:
             if os.path.exists(dest_path):
@@ -95,10 +163,10 @@ class DatasetService:
             describe_query = f"DESCRIBE SELECT * FROM read_csv_auto('{normalized_path}', sample_size=2048)"
             col_info = con.execute(describe_query).fetchall()
             
-            if not col_info:
+            if not col_info or any("\x00" in str(c[0]) for c in col_info):
                 if os.path.exists(dest_path):
                     os.remove(dest_path)
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CSV does not contain any valid columns or headers.")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="CSV does not contain any valid columns or readable headers.")
 
             # Calculate row count
             count_query = f"SELECT COUNT(*) FROM read_csv_auto('{normalized_path}')"
@@ -121,23 +189,27 @@ class DatasetService:
 
             # Inspect sample values for each column
             columns_created = []
-            for col_name, col_type, null_val, key_val, def_val, extra in col_info:
-                clean_col_name = str(col_name).strip()
+            for col_idx, (col_name, col_type, null_val, key_val, def_val, extra) in enumerate(col_info, start=1):
+                clean_col_name = str(col_name).replace("\x00", "").strip()[:255]
+                if not clean_col_name:
+                    clean_col_name = f"column_{col_idx}"
+                display_name = clean_col_name.replace("_", " ").title()[:255]
                 platform_type, is_dim, is_meas = map_duckdb_type(col_type)
 
-                # Get up to 5 sample values
+                # Get up to 5 sample values using the original DuckDB column identifier
                 try:
-                    escaped_name = clean_col_name.replace('"', '""')
+                    escaped_name = str(col_name).replace('"', '""')
                     samples_query = f'SELECT DISTINCT "{escaped_name}" FROM read_csv_auto(\'{normalized_path}\') WHERE "{escaped_name}" IS NOT NULL LIMIT 5'
                     sample_rows = con.execute(samples_query).fetchall()
-                    sample_vals = [r[0] for r in sample_rows]
-                except Exception:
+                    sample_vals = [serialize_sample_value(r[0]) for r in sample_rows]
+                except Exception as ex:
+                    logger.warning("Failed to extract sample values for column %s: %s", clean_col_name, ex)
                     sample_vals = []
 
                 column = DatasetColumn(
                     dataset_id=dataset.id,
                     name=clean_col_name,
-                    display_name=clean_col_name.replace("_", " ").title(),
+                    display_name=display_name,
                     data_type=platform_type,
                     is_dimension=is_dim,
                     is_measure=is_meas,
@@ -186,9 +258,11 @@ class DatasetService:
                 os.remove(dest_path)
             if isinstance(e, HTTPException):
                 raise e
+            logger.exception("Failed to parse and ingest CSV: %s", e)
+            safe_msg = sanitize_error_message(e)
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Failed to parse and ingest CSV: {str(e)}",
+                detail=f"Failed to parse and ingest CSV: {safe_msg}",
             )
         finally:
             if con:
@@ -258,10 +332,9 @@ class DatasetService:
                 for col_name, val in zip(col_names, r):
                     if val is None:
                         row_dict[col_name] = ""
-                    elif hasattr(val, "isoformat"):
-                        row_dict[col_name] = val.isoformat()
                     else:
-                        row_dict[col_name] = val
+                        s_val = serialize_sample_value(val)
+                        row_dict[col_name] = "" if s_val is None else s_val
                 rows.append(row_dict)
 
             col_responses = [DatasetColumnResponse.model_validate(c) for c in dataset.columns]

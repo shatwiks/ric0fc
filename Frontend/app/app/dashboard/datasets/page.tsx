@@ -252,14 +252,14 @@ export default function DatasetsPage() {
 
       {/* Error Banner */}
       {error && (
-        <div className="p-4 rounded-[16px] bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="p-4 rounded-[16px] bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
-            <span>{error}</span>
+            <span className="truncate max-w-2xl">{error}</span>
           </div>
           <button
             onClick={loadDatasets}
-            className="px-3 py-1 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs font-normal transition-colors"
+            className="px-3 py-1 rounded-full bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs font-normal transition-colors shrink-0"
           >
             Retry
           </button>

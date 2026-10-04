@@ -115,9 +115,12 @@ export default function UploadDatasetModal({ isOpen, onClose, onSuccess }: Uploa
 
         {/* Error Alert */}
         {error && (
-          <div className="p-3.5 rounded-[16px] bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5">
+          <div className="p-3.5 rounded-[16px] bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2.5 max-h-36 overflow-y-auto">
             <AlertCircle className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" />
-            <span>{error}</span>
+            <div className="flex-1 break-words font-sans text-xs leading-relaxed">
+              <span className="font-semibold text-rose-900 block mb-0.5">Upload Error</span>
+              <span className="text-rose-700">{error}</span>
+            </div>
           </div>
         )}
 
