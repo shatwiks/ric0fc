@@ -52,9 +52,9 @@ export default function Capabilities() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* Header */}
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-normal text-[#979799] uppercase tracking-wider block">
-            Capabilities ›
-          </span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fbe1d1]/60 border border-[#5d2a1a]/15 text-[10px] uppercase tracking-[0.2em] font-medium text-[#5d2a1a]">
+            <span>Capabilities</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-[44px] font-serif font-normal text-[#17191c] tracking-[-0.66px] leading-[1.25]">
             Engineered for analytical scale <br />
             <span className="italic font-serif font-normal text-[#777b86]">&amp; editorial clarity</span>
@@ -71,31 +71,33 @@ export default function Capabilities() {
             return (
               <div
                 key={cap.title}
-                className="p-8 rounded-[24px] bg-[#f2f2f3] flex flex-col justify-between space-y-6 hover:bg-[#ebebed] transition-colors"
+                className="p-1 rounded-[28px] bg-black/[0.03] ring-1 ring-black/[0.04]"
               >
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-full bg-[#ffffff] border border-[#ececec] flex items-center justify-center text-[#17191c] shadow-sm">
-                      <Icon className="h-4 w-4" />
+                <div className="p-8 rounded-[24px] bg-[#ffffff] border border-[#ececec] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:border-[#5d2a1a]/30 transition-all flex flex-col justify-between space-y-6 h-full active:scale-[0.985]">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-full bg-[#fbfbfb] border border-[#ececec] flex items-center justify-center text-[#17191c] shadow-xs">
+                        <Icon className="h-4 w-4 text-[#5d2a1a]" />
+                      </div>
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#5d2a1a] bg-[#fbe1d1] px-2.5 py-0.5 rounded-full border border-[#5d2a1a]/20">
+                        {cap.badge}
+                      </span>
                     </div>
-                    <span className="text-[11px] font-mono text-[#777b86]">
-                      {cap.badge}
-                    </span>
+
+                    <div>
+                      <h3 className="text-xl font-medium text-[#17191c] leading-snug">{cap.title}</h3>
+                      <p className="text-xs text-[#777b86] mt-2 leading-relaxed">{cap.desc}</p>
+                    </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-xl font-medium text-[#17191c] leading-snug">{cap.title}</h3>
-                    <p className="text-xs text-[#777b86] mt-2 leading-relaxed">{cap.desc}</p>
+                  <div className="pt-4 border-t border-[#f2f2f3] space-y-2">
+                    {cap.bullets.map((b) => (
+                      <div key={b} className="flex items-center gap-2 text-xs text-[#17191c]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] shrink-0" />
+                        <span>{b}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-
-                <div className="pt-4 border-t border-[#e5e5e7] space-y-2">
-                  {cap.bullets.map((b) => (
-                    <div key={b} className="flex items-center gap-2 text-xs text-[#17191c]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#17191c]" />
-                      <span>{b}</span>
-                    </div>
-                  ))}
                 </div>
               </div>
             );

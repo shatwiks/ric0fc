@@ -174,11 +174,11 @@ export default function Sidebar({ isMobileOpen = false, onCloseMobile }: Sidebar
                     <Link
                       href={item.href}
                       onClick={onCloseMobile}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-full text-xs font-normal transition-all cursor-pointer ${
+                      className={`flex items-center gap-3 px-3 py-2 rounded-full text-xs font-normal transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] cursor-pointer ${
                         isCollapsed && !isMobileOpen ? "justify-center px-0 h-10 w-full" : ""
                       } ${
                         isActive
-                          ? "bg-[#17191c] text-[#ffffff] shadow-sm font-medium"
+                          ? "bg-[#17191c] text-[#ffffff] shadow-xs font-medium"
                           : "text-[#777b86] hover:text-[#17191c] hover:bg-[#f2f2f3]"
                       }`}
                     >
@@ -191,6 +191,11 @@ export default function Sidebar({ isMobileOpen = false, onCloseMobile }: Sidebar
                       {/* Label when expanded */}
                       {(!isCollapsed || isMobileOpen) && (
                         <span className="flex-1 truncate">{item.label}</span>
+                      )}
+
+                      {/* Subtle Active Indicator Dot */}
+                      {(!isCollapsed || isMobileOpen) && isActive && !item.badge && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#fbe1d1] shrink-0" />
                       )}
 
                       {/* Badge when expanded */}

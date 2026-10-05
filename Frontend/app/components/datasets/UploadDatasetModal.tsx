@@ -136,7 +136,7 @@ export default function UploadDatasetModal({ isOpen, onClose, onSuccess }: Uploa
               dragActive
                 ? "border-[#5d2a1a] bg-[#fbe1d1]/30"
                 : file
-                ? "border-emerald-500 bg-emerald-50/50"
+                ? "border-[#5d2a1a] bg-[#fbe1d1]/20"
                 : "border-[#dcdcdc] hover:border-[#17191c] bg-[#f9f9fa] hover:bg-[#ffffff]"
             }`}
           >
@@ -155,8 +155,8 @@ export default function UploadDatasetModal({ isOpen, onClose, onSuccess }: Uploa
 
             {file ? (
               <div className="flex flex-col items-center gap-2">
-                <div className="h-10 w-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                <div className="h-10 w-10 rounded-xl bg-[#fbe1d1] text-[#5d2a1a] flex items-center justify-center">
+                  <CheckCircle2 className="h-5 w-5 text-[#5d2a1a]" />
                 </div>
                 <div>
                   <p className="text-xs font-semibold text-[#17191c] truncate max-w-xs">{file.name}</p>

@@ -24,7 +24,7 @@ const CHAPTERS = [
     badgeLabel: "CHAPTER I",
     title: "THE SEMANTIC CORE",
     label: "Semantic Layer",
-    dotColor: "bg-emerald-500",
+    dotColor: "bg-[#5d2a1a]",
   },
   {
     id: "chapter-2",
@@ -32,7 +32,7 @@ const CHAPTERS = [
     badgeLabel: "CHAPTER II",
     title: "GOVERNED TRUST",
     label: "Governed Trust",
-    dotColor: "bg-sky-500",
+    dotColor: "bg-[#17191c]",
   },
   {
     id: "chapter-3",
@@ -40,7 +40,7 @@ const CHAPTERS = [
     badgeLabel: "CHAPTER III",
     title: "DEEP INTELLIGENCE",
     label: "Deep Analysis",
-    dotColor: "bg-violet-500",
+    dotColor: "bg-[#5d2a1a]",
   },
   {
     id: "chapter-4",
@@ -48,7 +48,7 @@ const CHAPTERS = [
     badgeLabel: "CHAPTER IV",
     title: "WARM EDITORIAL PRINT",
     label: "Warm Editorial",
-    dotColor: "bg-amber-600",
+    dotColor: "bg-[#5d2a1a]",
   },
 ];
 
@@ -136,7 +136,7 @@ export default function ScrollChapters() {
       >
         <div className="space-y-4 max-w-3xl">
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#f2f2f3] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
             <span className="font-semibold text-[#5d2a1a]">CHAPTER I</span>
             <span className="text-[#a1a1aa]">/</span>
             <span className="text-[#52525b] font-medium tracking-[0.16em]">THE SEMANTIC CORE</span>
@@ -225,7 +225,7 @@ export default function ScrollChapters() {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="space-y-4 max-w-3xl">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#ffffff] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[0_2px_8px_rgba(0,0,0,0.03),inset_0_1px_0_rgba(255,255,255,0.8)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#17191c] animate-pulse" />
               <span className="font-semibold text-[#5d2a1a]">CHAPTER II</span>
               <span className="text-[#a1a1aa]">/</span>
               <span className="text-[#52525b] font-medium tracking-[0.16em]">GOVERNED TRUST</span>
@@ -402,7 +402,7 @@ export default function ScrollChapters() {
           {/* Left Column: Text Reveal */}
           <div className="lg:col-span-5 space-y-4">
             <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-[#f2f2f3] border border-[#e4e4e7] text-[11px] font-mono tracking-widest uppercase text-[#17191c] shadow-[inset_0_1px_0_rgba(255,255,255,0.8)]">
-              <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
               <span className="font-semibold text-[#5d2a1a]">CHAPTER III</span>
               <span className="text-[#a1a1aa]">/</span>
               <span className="text-[#52525b] font-medium tracking-[0.16em]">DEEP INTELLIGENCE</span>

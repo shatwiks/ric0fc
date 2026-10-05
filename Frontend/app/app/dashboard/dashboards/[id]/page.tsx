@@ -552,13 +552,13 @@ export default function DashboardDetailPage() {
               {dashboard.title}
             </h1>
             {dashboard.is_published ? (
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5" id="dashboard-status-badge">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 flex items-center gap-1.5" id="dashboard-status-badge">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
                 Published
               </span>
             ) : (
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5" id="dashboard-status-badge">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#f2f2f3] text-[#777b86] border border-[#ececec] flex items-center gap-1.5" id="dashboard-status-badge">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#979799]" />
                 Draft
               </span>
             )}
@@ -582,8 +582,8 @@ export default function DashboardDetailPage() {
             <p className="text-xs md:text-sm text-[#777b86] mt-1">{dashboard.description}</p>
           )}
           {exportSuccess && (
-            <div className="mt-2 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-[12px] text-xs flex items-center gap-2 animate-in fade-in" id="export-success-toast">
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <div className="mt-2 p-2.5 bg-[#fbe1d1]/60 border border-[#5d2a1a]/20 text-[#5d2a1a] rounded-[16px] text-xs flex items-center gap-2 animate-in fade-in" id="export-success-toast">
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#5d2a1a] shrink-0" />
               <span>{exportSuccess}</span>
             </div>
           )}
@@ -621,7 +621,7 @@ export default function DashboardDetailPage() {
                   disabled={isExportingCSV}
                   className="w-full text-left px-4 py-2.5 text-xs text-[#17191c] hover:bg-[#f2f2f3] flex items-center gap-2.5 cursor-pointer disabled:opacity-50"
                 >
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <FileSpreadsheet className="w-4 h-4 text-[#5d2a1a] shrink-0" />
                   <span>{isExportingCSV ? "Exporting CSV..." : "Export as CSV"}</span>
                 </button>
                 <button
@@ -1217,7 +1217,7 @@ export default function DashboardDetailPage() {
                   id="copy-share-link-btn"
                   className="px-3.5 py-1.5 rounded-full bg-[#17191c] hover:bg-black text-white text-xs font-medium shrink-0 flex items-center gap-1.5 transition-colors cursor-pointer shadow-sm"
                 >
-                  {isCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                  {isCopied ? <Check className="w-3 h-3 text-[#fbe1d1]" /> : <Copy className="w-3 h-3" />}
                   <span>{isCopied ? "Copied" : "Copy"}</span>
                 </button>
               </div>
@@ -1347,8 +1347,8 @@ export default function DashboardDetailPage() {
                     <div className="flex items-center gap-2">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
                         s.permission === "edit"
-                          ? "bg-purple-50 text-purple-700 border border-purple-200"
-                          : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                          ? "bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20"
+                          : "bg-[#f2f2f3] text-[#17191c] border border-[#ececec]"
                       }`}>
                         {s.permission === "edit" ? "Can edit" : "Can view"}
                       </span>

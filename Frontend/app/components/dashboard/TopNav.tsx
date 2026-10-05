@@ -207,7 +207,7 @@ export default function TopNav({ onOpenMobile }: TopNavProps) {
         <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f2f2f3] text-[11px] text-[#17191c]">
           {backendStatus === "online" ? (
             <>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
               <span className="font-normal text-[#17191c]">PostgreSQL 18 Live</span>
             </>
           ) : backendStatus === "checking" ? (

@@ -12,8 +12,8 @@ interface HeroFullScreenProps {
 export default function HeroFullScreen({ onOpenContact }: HeroFullScreenProps) {
   return (
     <section className="relative w-full min-h-screen bg-[#111317] text-white flex flex-col justify-between pt-24 pb-12 px-4 sm:px-6 lg:px-8 overflow-hidden select-none">
-      {/* Background ambient radial illumination */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] bg-gradient-to-r from-cyan-950/20 via-indigo-950/25 to-purple-950/15 blur-[120px] pointer-events-none rounded-full" />
+      {/* Background ambient radial illumination — warm sienna/espresso wash */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[450px] bg-gradient-to-r from-[#5d2a1a]/25 via-[#421d12]/20 to-amber-950/15 blur-[120px] pointer-events-none rounded-full" />
 
       {/* Main Top / Center Editorial Content */}
       <div className="relative z-10 max-w-6xl mx-auto w-full pt-8 sm:pt-14 space-y-6">
@@ -57,9 +57,12 @@ export default function HeroFullScreen({ onOpenContact }: HeroFullScreenProps) {
         >
           <Link
             href="/auth/signup"
-            className="px-7 py-3 rounded-full bg-[#ffffff] text-[#17191c] font-medium text-sm hover:bg-slate-100 transition-all cursor-pointer shadow-lg shadow-white/5"
+            className="px-7 py-3 rounded-full bg-[#ffffff] text-[#17191c] font-medium text-sm hover:bg-slate-100 active:scale-[0.98] transition-all cursor-pointer shadow-lg shadow-white/5 flex items-center gap-2 group"
           >
-            Get started
+            <span>Get started</span>
+            <div className="w-5 h-5 rounded-full bg-black/5 flex items-center justify-center transition-transform group-hover:translate-x-0.5">
+              <ArrowRight className="w-3 h-3 text-[#17191c]" />
+            </div>
           </Link>
 
           <a
@@ -81,7 +84,7 @@ export default function HeroFullScreen({ onOpenContact }: HeroFullScreenProps) {
       >
         <div className="flex items-center justify-between pb-4 border-b border-[#2b2e36] text-xs">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+            <div className="w-2.5 h-2.5 rounded-full bg-[#fbe1d1] animate-pulse" />
             <span className="font-semibold text-white tracking-wide">Ricoz Semantic Engine</span>
           </div>
           <span className="text-[#979799] font-mono text-[11px]">PostgreSQL 18 + DuckDB In-Memory</span>
@@ -137,7 +140,7 @@ export default function HeroFullScreen({ onOpenContact }: HeroFullScreenProps) {
                   key={d.name}
                   className="px-3 py-2 rounded-xl bg-[#23262f] border border-[#323642] text-xs text-slate-300 flex items-center gap-2 hover:border-[#4f5568] transition-colors"
                 >
-                  <Icon className="w-3.5 h-3.5 text-cyan-400" />
+                  <Icon className="w-3.5 h-3.5 text-[#fbe1d1]" />
                   <span>{d.name}</span>
                 </div>
               );

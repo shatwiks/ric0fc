@@ -573,7 +573,7 @@ export default function InteractiveDataExplorerPage() {
                                 <span
                                   className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${
                                     val
-                                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                      ? "bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20"
                                       : "bg-rose-50 text-rose-800 border border-rose-200"
                                   }`}
                                 >
@@ -816,7 +816,7 @@ export default function InteractiveDataExplorerPage() {
 
                 {queryResponse && (
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium">
+                    <span className="px-3 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 font-medium">
                       {queryResponse.row_count} rows
                     </span>
                     <span className="px-3 py-1 rounded-full bg-[#f2f2f3] text-[#17191c] font-mono flex items-center gap-1">
@@ -870,8 +870,8 @@ export default function InteractiveDataExplorerPage() {
             </div>
 
             {saveSuccessMsg && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="mb-4 p-3 rounded-xl bg-[#fbe1d1]/60 border border-[#5d2a1a]/20 text-[#5d2a1a] text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#5d2a1a] shrink-0" />
                 <span>{saveSuccessMsg}</span>
               </div>
             )}

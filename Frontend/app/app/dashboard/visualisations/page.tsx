@@ -592,8 +592,8 @@ export default function VisualisationStudioPage() {
 
               {queryResponse && (
                 <div className="flex items-center gap-3 text-xs">
-                  <span className="px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-medium flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span className="px-3 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20 font-medium flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#5d2a1a]" />
                     {queryResponse.row_count} rows
                   </span>
                   <span className="px-3 py-1 rounded-full bg-[#f2f2f3] text-[#17191c] font-mono flex items-center gap-1">
@@ -658,8 +658,8 @@ export default function VisualisationStudioPage() {
             </div>
 
             {saveSuccessMsg && (
-              <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <div className="mb-4 p-3 rounded-xl bg-[#fbe1d1]/60 border border-[#5d2a1a]/20 text-[#5d2a1a] text-xs flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-[#5d2a1a] shrink-0" />
                 <span>{saveSuccessMsg}</span>
               </div>
             )}

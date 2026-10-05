@@ -122,8 +122,8 @@ export default function DashboardOverviewPage() {
             <div className="w-9 h-9 rounded-2xl bg-[#f2f2f3] flex items-center justify-center text-[#17191c]">
               <Server className="w-4 h-4" />
             </div>
-            <span className="flex items-center gap-1.5 text-xs text-emerald-800 font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-xs text-[#5d2a1a] font-medium px-2.5 py-0.5 rounded-full bg-[#fbe1d1] border border-[#5d2a1a]/20">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
               <span>Live Engine</span>
             </span>
           </div>
@@ -276,7 +276,7 @@ export default function DashboardOverviewPage() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-mono text-[#979799]">0{idx + 1}</span>
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                <CheckCircle2 className="w-4 h-4 text-[#5d2a1a]" />
               </div>
               <div>
                 <h3 className="text-xs font-semibold text-[#17191c] leading-tight">

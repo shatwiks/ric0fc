@@ -281,8 +281,8 @@ export default function GovernancePage() {
 
       {/* Action Success Toast */}
       {actionSuccess && (
-        <div className="p-4 rounded-[16px] bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-center gap-3 animate-in fade-in" id="governance-success-toast">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-4 rounded-[16px] bg-[#fbe1d1]/60 border border-[#5d2a1a]/20 text-[#5d2a1a] text-xs sm:text-sm flex items-center gap-3 animate-in fade-in" id="governance-success-toast">
+          <CheckCircle2 className="w-5 h-5 text-[#5d2a1a] shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
@@ -339,8 +339,8 @@ export default function GovernancePage() {
             <p className="text-[11px] font-normal text-[#979799] uppercase tracking-wider">
               Security Boundary
             </p>
-            <p className="text-xs font-semibold text-emerald-800 flex items-center gap-1.5 mt-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+            <p className="text-xs font-semibold text-[#5d2a1a] flex items-center gap-1.5 mt-1">
+              <span className="w-2 h-2 rounded-full bg-[#5d2a1a] animate-pulse" />
               Isolated Multi-Tenant
             </p>
           </div>
@@ -495,7 +495,7 @@ export default function GovernancePage() {
                             <span
                               className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
                                 u.is_active
-                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                  ? "bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20"
                                   : "bg-rose-50 text-rose-700 border border-rose-200"
                               }`}
                             >
@@ -518,7 +518,7 @@ export default function GovernancePage() {
                                   className={`p-1.5 rounded-full transition-colors cursor-pointer ${
                                     u.is_active
                                       ? "text-[#777b86] hover:text-amber-700 hover:bg-amber-50"
-                                      : "text-emerald-700 hover:bg-emerald-50"
+                                      : "text-[#5d2a1a] hover:bg-[#fbe1d1]/50"
                                   }`}
                                   title={u.is_active ? "Deactivate user" : "Activate user"}
                                 >
@@ -658,30 +658,30 @@ export default function GovernancePage() {
               <div className="space-y-3 pt-2">
                 <div className="flex items-center justify-between p-3 rounded-[16px] bg-[#f9f9fa] border border-[#ececec]">
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-emerald-600" />
+                    <Shield className="w-4 h-4 text-[#5d2a1a]" />
                     <span className="text-xs font-medium text-[#17191c]">SOC2 Type II Audit Logging</span>
                   </div>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-semibold text-[#5d2a1a] bg-[#fbe1d1] px-2.5 py-0.5 rounded-full border border-[#5d2a1a]/20">
                     Active
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-[16px] bg-[#f9f9fa] border border-[#ececec]">
                   <div className="flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-emerald-600" />
+                    <Lock className="w-4 h-4 text-[#5d2a1a]" />
                     <span className="text-xs font-medium text-[#17191c]">FastAPI Strict RBAC Enforced</span>
                   </div>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-semibold text-[#5d2a1a] bg-[#fbe1d1] px-2.5 py-0.5 rounded-full border border-[#5d2a1a]/20">
                     Enforced
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between p-3 rounded-[16px] bg-[#f9f9fa] border border-[#ececec]">
                   <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-emerald-600" />
+                    <Layers className="w-4 h-4 text-[#5d2a1a]" />
                     <span className="text-xs font-medium text-[#17191c]">DuckDB Memory Sandbox</span>
                   </div>
-                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-semibold text-[#5d2a1a] bg-[#fbe1d1] px-2.5 py-0.5 rounded-full border border-[#5d2a1a]/20">
                     Isolated
                   </span>
                 </div>

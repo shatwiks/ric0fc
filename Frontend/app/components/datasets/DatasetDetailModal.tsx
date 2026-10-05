@@ -232,10 +232,10 @@ export default function DatasetDetailModal({
                 <span
                   className={`px-2.5 py-0.5 text-xs font-medium rounded-full border ${
                     dataset.status === "ready"
-                      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                      ? "bg-[#fbe1d1] text-[#5d2a1a] border-[#5d2a1a]/20"
                       : dataset.status === "error"
                       ? "bg-rose-50 text-rose-700 border-rose-200"
-                      : "bg-[#fbe1d1] text-[#5d2a1a] border-[#5d2a1a]/20"
+                      : "bg-[#f2f2f3] text-[#777b86] border-[#ececec]"
                   }`}
                 >
                   {dataset.status ? dataset.status.toUpperCase() : "READY"}
@@ -716,7 +716,7 @@ export default function DatasetDetailModal({
                   <div className="flex-1 flex flex-col bg-[#ffffff] border border-[#ececec] rounded-2xl overflow-hidden shadow-sm">
                     <div className="px-5 py-3 bg-[#f8f8f9] border-b border-[#ececec] flex items-center justify-between text-xs">
                       <div className="flex items-center gap-3">
-                        <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                        <span className="text-[#5d2a1a] font-semibold flex items-center gap-1">
                           <CheckCircle2 className="w-4 h-4" />
                           Query Executed Successfully
                         </span>

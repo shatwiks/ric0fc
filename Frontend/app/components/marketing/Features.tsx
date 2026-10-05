@@ -69,7 +69,7 @@ export default function Features() {
         <div className="p-5 rounded-[20px] bg-[#ffffff] border border-[#ececec] shadow-artifact space-y-3 font-sans text-xs">
           <div className="flex items-center justify-between border-b border-[#f2f2f3] pb-2 text-[11px]">
             <span className="text-[#17191c] font-medium flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" /> PostgreSQL 18 Live
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#5d2a1a]" /> PostgreSQL 18 Live
             </span>
             <span className="text-[#777b86] font-mono text-[10px]">127.0.0.1:5432</span>
           </div>
@@ -85,7 +85,7 @@ export default function Features() {
           </div>
           <div className="pt-2 border-t border-[#f2f2f3] flex items-center justify-between text-[11px] text-[#777b86]">
             <span>Latency</span>
-            <span className="font-mono text-emerald-700 font-semibold">12ms avg</span>
+            <span className="font-mono text-[#5d2a1a] font-semibold">12ms avg</span>
           </div>
         </div>
       ),
@@ -107,7 +107,7 @@ export default function Features() {
             <span className="flex items-center gap-1.5 text-[#17191c] font-medium">
               <Compass className="h-3.5 w-3.5 text-[#17191c]" /> Ad-Hoc Explorer Stage
             </span>
-            <span className="font-mono text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Mode: Pivot</span>
+            <span className="font-mono text-[10px] text-[#5d2a1a] bg-[#fbe1d1] px-2.5 py-0.5 rounded-full border border-[#5d2a1a]/20">Mode: Pivot</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="px-2.5 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a] text-[11px] font-medium">
@@ -149,7 +149,7 @@ export default function Features() {
         <div className="p-5 rounded-[20px] bg-[#ffffff] border border-[#ececec] shadow-artifact space-y-3 font-sans text-xs">
           <div className="flex items-center justify-between border-b border-[#f2f2f3] pb-2 text-[11px]">
             <span className="flex items-center gap-1.5 text-[#17191c] font-medium">
-              <Lock className="h-3.5 w-3.5 text-emerald-600" /> RBAC Security Matrix
+              <Lock className="h-3.5 w-3.5 text-[#5d2a1a]" /> RBAC Security Matrix
             </span>
             <span className="text-[10px] font-mono text-[#777b86]">Enterprise Audit Active</span>
           </div>
@@ -180,9 +180,9 @@ export default function Features() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
         {/* Section Heading */}
         <div className="max-w-2xl space-y-3">
-          <span className="text-xs font-normal text-[#979799] uppercase tracking-wider block">
-            Platform Capabilities ›
-          </span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#fbe1d1]/60 border border-[#5d2a1a]/15 text-[10px] uppercase tracking-[0.2em] font-medium text-[#5d2a1a]">
+            <span>Deep Dive</span>
+          </div>
           <h2 className="text-3xl sm:text-4xl md:text-[44px] font-serif font-normal text-[#17191c] tracking-[-0.66px] leading-[1.25]">
             Engineered for analysts, <br />
             <span className="italic font-serif font-normal text-[#777b86]">built for executives</span>
@@ -197,27 +197,29 @@ export default function Features() {
           {features.map((f) => (
             <div
               key={f.id}
-              className="p-8 sm:p-10 rounded-[24px] bg-[#f2f2f3] flex flex-col justify-between space-y-8"
+              className="p-1 rounded-[28px] bg-black/[0.03] ring-1 ring-black/[0.04]"
             >
-              <div className="space-y-4">
-                <span className="text-xs text-[#979799] font-normal uppercase tracking-wider block">
-                  {f.category}
-                </span>
-                <h3 className="text-2xl font-serif font-normal text-[#17191c] tracking-tight">{f.title}</h3>
-                <p className="text-sm text-[#777b86] leading-relaxed">{f.description}</p>
+              <div className="p-8 sm:p-10 rounded-[24px] bg-[#ffffff] border border-[#ececec] shadow-[inset_0_1px_1px_rgba(255,255,255,0.9)] hover:border-[#5d2a1a]/30 transition-all flex flex-col justify-between space-y-8 h-full active:scale-[0.985]">
+                <div className="space-y-4">
+                  <span className="text-[10px] text-[#5d2a1a] font-mono uppercase tracking-widest block bg-[#fbe1d1] px-2.5 py-0.5 rounded-full w-max border border-[#5d2a1a]/20">
+                    {f.category}
+                  </span>
+                  <h3 className="text-2xl font-serif font-normal text-[#17191c] tracking-tight">{f.title}</h3>
+                  <p className="text-xs text-[#777b86] leading-relaxed">{f.description}</p>
 
-                <ul className="space-y-2 pt-2">
-                  {f.bullets.map((b, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-[#17191c]">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#17191c]" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-2 pt-2">
+                    {f.bullets.map((b, i) => (
+                      <li key={i} className="flex items-center gap-2 text-xs text-[#17191c]">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] shrink-0" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Floating Product UI Artifact Mockup */}
+                <div className="pt-2">{f.mockup}</div>
               </div>
-
-              {/* Floating Product UI Artifact Mockup */}
-              <div className="pt-2">{f.mockup}</div>
             </div>
           ))}
         </div>

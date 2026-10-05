@@ -15,7 +15,7 @@ export default function Footer() {
                 <span className="font-serif text-xs font-normal">R</span>
               </div>
               <span className="text-base font-medium tracking-tight text-[#17191c]">
-                Ricoz<span className="text-[#979799]">Viz</span>
+                Ricoz<span className="font-serif italic font-normal text-[#5d2a1a]">Viz</span>
               </span>
             </Link>
 
@@ -24,7 +24,7 @@ export default function Footer() {
             </p>
 
             <div className="flex items-center gap-2 pt-1 text-[11px] text-[#777b86]">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
               <span>All Systems Operational • PostgreSQL 18 Live</span>
             </div>
           </div>

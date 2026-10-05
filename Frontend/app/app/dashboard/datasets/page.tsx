@@ -209,8 +209,8 @@ export default function DatasetsPage() {
           </div>
           <div className="mt-3">
             <span className="text-lg font-serif font-normal text-[#17191c] tracking-tight">DuckDB Embedded</span>
-            <p className="text-[11px] text-emerald-700 mt-0.5 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+            <p className="text-[11px] text-[#5d2a1a] mt-0.5 flex items-center gap-1 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#5d2a1a] animate-pulse" />
               Real-time In-Memory
             </p>
           </div>
@@ -331,10 +331,10 @@ export default function DatasetsPage() {
                   <span
                     className={`px-3 py-0.5 text-[11px] font-medium rounded-full border ${
                       ds.status === "ready"
-                        ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                        ? "bg-[#fbe1d1] text-[#5d2a1a] border-[#5d2a1a]/20"
                         : ds.status === "error"
                         ? "bg-rose-50 text-rose-800 border-rose-200"
-                        : "bg-amber-50 text-amber-800 border-amber-200"
+                        : "bg-[#f2f2f3] text-[#777b86] border-[#ececec]"
                     }`}
                   >
                     {ds.status ? ds.status.toUpperCase() : "READY"}

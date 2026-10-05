@@ -296,8 +296,8 @@ export default function ReportsPage() {
             <p className="text-[11px] font-normal text-[#979799] uppercase tracking-wider">
               Export Formats
             </p>
-            <p className="text-xs font-semibold text-emerald-800 flex items-center gap-1.5 mt-1">
-              <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
+            <p className="text-xs font-semibold text-[#5d2a1a] flex items-center gap-1.5 mt-1">
+              <span className="w-2 h-2 rounded-full bg-[#5d2a1a] animate-pulse" />
               Live CSV & Vector PDF
             </p>
           </div>
@@ -306,8 +306,8 @@ export default function ReportsPage() {
 
       {/* Success / Error Banners */}
       {exportSuccess && (
-        <div className="p-4 rounded-[16px] bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs sm:text-sm flex items-center gap-3 animate-in fade-in" id="export-center-success-banner">
-          <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+        <div className="p-4 rounded-[16px] bg-[#fbe1d1]/60 border border-[#5d2a1a]/20 text-[#5d2a1a] text-xs sm:text-sm flex items-center gap-3 animate-in fade-in" id="export-center-success-banner">
+          <CheckCircle2 className="w-5 h-5 text-[#5d2a1a] shrink-0" />
           <span>{exportSuccess}</span>
         </div>
       )}
@@ -413,7 +413,7 @@ export default function ReportsPage() {
                     : "bg-[#f2f2f3] text-[#777b86] border-transparent hover:bg-[#ededee]"
                 }`}
               >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-500" />
+                <FileSpreadsheet className="w-3.5 h-3.5 text-[#5d2a1a]" />
                 <span>CSV</span>
               </button>
 
@@ -550,7 +550,7 @@ export default function ReportsPage() {
                             {rep.format === "pdf" ? (
                               <FileText className="w-4 h-4 text-rose-600 shrink-0" />
                             ) : (
-                              <FileSpreadsheet className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <FileSpreadsheet className="w-4 h-4 text-[#5d2a1a] shrink-0" />
                             )}
                             <span className="truncate max-w-xs">{rep.name}</span>
                           </div>
@@ -560,7 +560,7 @@ export default function ReportsPage() {
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase ${
                               rep.format === "pdf"
                                 ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                : "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20"
                             }`}
                           >
                             {rep.format}
@@ -665,7 +665,7 @@ export default function ReportsPage() {
                           </div>
                         </td>
                         <td className="py-3.5 px-4">
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-medium bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20">
                             {s.status}
                           </span>
                         </td>

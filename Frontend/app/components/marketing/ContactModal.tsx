@@ -157,7 +157,7 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-2 py-3 px-6 bg-[#17191c] text-[#ffffff] hover:bg-black rounded-full text-xs font-normal transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-sm"
+                className="w-full mt-2 py-3 px-6 bg-[#17191c] text-[#ffffff] hover:bg-black active:scale-[0.98] rounded-full text-xs font-normal transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50 shadow-sm group"
               >
                 {isSubmitting ? (
                   <>
@@ -167,7 +167,9 @@ export default function ContactModal({ isOpen, onClose }: ContactModalProps) {
                 ) : (
                   <>
                     <span>Request Briefing</span>
-                    <Send className="w-3 h-3" />
+                    <div className="w-5 h-5 rounded-full bg-white/10 flex items-center justify-center transition-transform group-hover:translate-x-0.5">
+                      <Send className="w-2.5 h-2.5 text-white" />
+                    </div>
                   </>
                 )}
               </button>
