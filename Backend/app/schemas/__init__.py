@@ -5,6 +5,7 @@ from app.schemas.auth import (
     UserResponse,
     OrganizationResponse,
     WorkspaceResponse,
+    CreateWorkspaceRequest,
     AuthMeResponse,
 )
 from app.schemas.dataset import (
@@ -53,6 +54,7 @@ __all__ = [
     "UserResponse",
     "OrganizationResponse",
     "WorkspaceResponse",
+    "CreateWorkspaceRequest",
     "AuthMeResponse",
     "DatasetResponse",
     "DatasetColumnResponse",

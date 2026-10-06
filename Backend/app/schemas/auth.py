@@ -37,6 +37,9 @@ class WorkspaceResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class CreateWorkspaceRequest(BaseModel):
+    name: str = Field(..., min_length=2, max_length=100)
+
 class OrganizationResponse(BaseModel):
     id: UUID
     name: str

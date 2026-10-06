@@ -481,6 +481,13 @@ class ApiClient {
     });
   }
 
+  async createWorkspace(name: string): Promise<WorkspaceResponse> {
+    return this.request<WorkspaceResponse>("/auth/workspaces", {
+      method: "POST",
+      body: JSON.stringify({ name }),
+    });
+  }
+
   // Day 3 Datasets endpoints
   async listDatasets(): Promise<Dataset[]> {
     return this.request<Dataset[]>("/datasets");

@@ -22,6 +22,7 @@ interface AuthState {
   }) => Promise<void>;
   logout: () => Promise<void>;
   setActiveWorkspace: (workspace: WorkspaceResponse) => void;
+  addWorkspace: (workspace: WorkspaceResponse) => void;
   fetchCurrentUser: () => Promise<boolean>;
   clearError: () => void;
 }
@@ -39,6 +40,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearError: () => set({ error: null }),
   setActiveWorkspace: (workspace: WorkspaceResponse) => set({ workspace }),
+  addWorkspace: (workspace: WorkspaceResponse) => {
+    set((state) => ({
+      organization: state.organization
+        ? {
+            ...state.organization,
+            workspaces: state.organization.workspaces?.some((w) => w.id === workspace.id)
+              ? state.organization.workspaces
+              : [...(state.organization.workspaces || []), workspace],
+          }
+        : null,
+      workspace,
+    }));
+  },
 
   login: async (credentials) => {
     set({ isLoading: true, error: null });

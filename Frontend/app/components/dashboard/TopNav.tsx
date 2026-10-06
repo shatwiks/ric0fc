@@ -43,11 +43,17 @@ const routeTitles: Record<string, string> = {
 export default function TopNav({ onOpenMobile }: TopNavProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, organization, workspace, setActiveWorkspace, logout, permissions } = useAuthStore();
+  const { user, organization, workspace, setActiveWorkspace, addWorkspace, logout, permissions } = useAuthStore();
 
   const [backendStatus, setBackendStatus] = useState<"checking" | "online" | "offline">("checking");
   const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+
+  // New workspace creation state
+  const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
+  const [newWorkspaceName, setNewWorkspaceName] = useState("");
+  const [isSubmittingWs, setIsSubmittingWs] = useState(false);
+  const [workspaceError, setWorkspaceError] = useState<string | null>(null);
 
   const workspaceRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -57,6 +63,9 @@ export default function TopNav({ onOpenMobile }: TopNavProps) {
     const handleClickOutside = (event: MouseEvent) => {
       if (workspaceRef.current && !workspaceRef.current.contains(event.target as Node)) {
         setIsWorkspaceMenuOpen(false);
+        setIsCreatingWorkspace(false);
+        setNewWorkspaceName("");
+        setWorkspaceError(null);
       }
       if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
         setIsProfileMenuOpen(false);
@@ -93,6 +102,26 @@ export default function TopNav({ onOpenMobile }: TopNavProps) {
   const currentSection = routeTitles[pathname] || "Dashboard";
   const workspacesList = organization?.workspaces || (workspace ? [workspace] : []);
 
+  const handleCreateWorkspace = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const name = newWorkspaceName.trim();
+    if (!name) return;
+
+    setIsSubmittingWs(true);
+    setWorkspaceError(null);
+    try {
+      const created = await api.createWorkspace(name);
+      addWorkspace(created);
+      setIsCreatingWorkspace(false);
+      setNewWorkspaceName("");
+      setIsWorkspaceMenuOpen(false);
+    } catch (err: any) {
+      setWorkspaceError(err.message || "Failed to create workspace.");
+    } finally {
+      setIsSubmittingWs(false);
+    }
+  };
+
   const getRoleBadgeStyle = (role?: string) => {
     switch (role) {
       case "Admin":
@@ -122,20 +151,29 @@ export default function TopNav({ onOpenMobile }: TopNavProps) {
         {/* Workspace Switcher Popover Pill */}
         <div className="relative" ref={workspaceRef}>
           <button
-            onClick={() => setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f2f2f3] hover:bg-[#eaebee] text-xs text-[#17191c] text-left transition-all cursor-pointer group"
+            onClick={() => {
+              setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen);
+              if (isWorkspaceMenuOpen) {
+                setIsCreatingWorkspace(false);
+                setNewWorkspaceName("");
+                setWorkspaceError(null);
+              }
+            }}
+            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#faf8f5] hover:bg-[#f2eee7] border border-[#e8e4db] text-xs text-[#17191c] text-left transition-all cursor-pointer group shadow-2xs"
           >
-            <Building2 className="w-3.5 h-3.5 text-[#17191c] shrink-0" />
-            <span className="font-medium text-[#17191c] max-w-[120px] sm:max-w-[160px] truncate">
+            <Building2 className="w-3.5 h-3.5 text-[#5d2a1a] shrink-0" />
+            <span className="font-medium text-[#17191c] max-w-[130px] sm:max-w-[180px] lg:max-w-[220px] truncate">
               {organization?.name || "Ricoz Enterprise"}
             </span>
-            <span className="text-[#979799] hidden sm:inline">/</span>
-            <div className="hidden sm:flex items-center gap-1 text-[#777b86]">
-              <Layers className="w-3 h-3 text-[#979799] shrink-0" />
-              <span className="max-w-[100px] truncate">{workspace?.name || "Main Workspace"}</span>
+            <span className="text-[#c4bfb6] hidden sm:inline">/</span>
+            <div className="hidden sm:flex items-center gap-1.5 text-[#595551]">
+              <Layers className="w-3.5 h-3.5 text-[#5d2a1a]/70 shrink-0" />
+              <span className="max-w-[180px] md:max-w-[260px] truncate font-medium text-[#2c2a29]">
+                {workspace?.name || "Main Workspace"}
+              </span>
             </div>
             <ChevronDown
-              className={`w-3 h-3 text-[#777b86] transition-transform ${
+              className={`w-3 h-3 text-[#777b86] transition-transform duration-200 ${
                 isWorkspaceMenuOpen ? "rotate-180" : ""
               }`}
             />
@@ -143,49 +181,147 @@ export default function TopNav({ onOpenMobile }: TopNavProps) {
 
           {/* Workspace Dropdown */}
           {isWorkspaceMenuOpen && (
-            <div className="absolute left-0 mt-2 w-72 p-2 bg-[#ffffff] border border-[#ececec] rounded-[20px] shadow-artifact z-50 animate-in fade-in duration-150">
-              <div className="px-3 py-2 border-b border-[#f2f2f3]">
-                <p className="text-[10px] font-normal text-[#979799] uppercase tracking-wider">
-                  Organization Workspaces
-                </p>
-                <p className="text-xs font-semibold text-[#17191c] truncate mt-0.5">
-                  {organization?.name}
-                </p>
-              </div>
-
-              <div className="py-1 max-h-48 overflow-y-auto space-y-0.5">
-                {workspacesList.map((ws) => {
-                  const isSelected = workspace?.id === ws.id;
-                  return (
-                    <button
-                      key={ws.id}
-                      onClick={() => {
-                        setActiveWorkspace(ws);
-                        setIsWorkspaceMenuOpen(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-[14px] text-xs transition-colors text-left cursor-pointer ${
-                        isSelected
-                          ? "bg-[#17191c] text-white font-medium"
-                          : "text-[#17191c] hover:bg-[#f2f2f3]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <Layers
-                          className={`w-3.5 h-3.5 ${isSelected ? "text-white" : "text-[#777b86]"}`}
-                        />
-                        <span className="truncate">{ws.name}</span>
-                      </div>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-white shrink-0 ml-2" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="pt-2 border-t border-[#f2f2f3]">
-                <div className="px-3 py-1.5 flex items-center gap-2 text-[11px] text-[#979799]">
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Workspace provisioning enabled in Day 5</span>
+            <div className="absolute left-0 mt-2 w-80 p-2.5 bg-[#ffffff] border border-[#eceae5] rounded-[20px] shadow-xl shadow-black/8 z-50 animate-in fade-in zoom-in-95 duration-150">
+              {/* Organization Header */}
+              <div className="px-3.5 py-2.5 bg-[#fbf9f5] rounded-[16px] border border-[#eee9df] mb-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7c7771]">
+                    Organization
+                  </span>
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#fbe1d1] text-[#5d2a1a] border border-[#5d2a1a]/20">
+                    {organization?.plan || "Enterprise"}
+                  </span>
                 </div>
+                <div className="flex items-center gap-2 mt-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-[#5d2a1a] shrink-0" />
+                  <p className="text-xs font-semibold text-[#17191c] truncate">
+                    {organization?.name || "Ricoz Enterprise Analytics"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Workspaces List */}
+              <div className="px-1 py-1">
+                <div className="px-2 pb-1.5 flex items-center justify-between text-[10px] font-medium text-[#7c7771] uppercase tracking-wider">
+                  <span>Workspaces</span>
+                  <span>{workspacesList.length} total</span>
+                </div>
+                <div className="max-h-52 overflow-y-auto space-y-1 pr-0.5">
+                  {workspacesList.map((ws) => {
+                    const isSelected = workspace?.id === ws.id;
+                    return (
+                      <button
+                        key={ws.id}
+                        onClick={() => {
+                          setActiveWorkspace(ws);
+                          setIsWorkspaceMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between p-2 rounded-[14px] text-xs transition-all text-left cursor-pointer group ${
+                          isSelected
+                            ? "bg-[#201d1a] text-[#fbf9f5] font-medium shadow-2xs"
+                            : "text-[#2c2a29] hover:bg-[#f8f6f1]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5 truncate">
+                          <div
+                            className={`w-7 h-7 rounded-[10px] flex items-center justify-center shrink-0 transition-colors ${
+                              isSelected
+                                ? "bg-[#ffffff]/12 text-[#fbe1d1]"
+                                : "bg-[#f2eee7] text-[#5d2a1a] group-hover:bg-[#ebe5d9]"
+                            }`}
+                          >
+                            <Layers className="w-3.5 h-3.5" />
+                          </div>
+                          <div className="truncate flex flex-col min-w-0">
+                            <span className="truncate text-xs font-medium leading-snug">
+                              {ws.name}
+                            </span>
+                            <span
+                              className={`text-[10px] leading-none mt-0.5 ${
+                                isSelected ? "text-[#e2ded6]" : "text-[#7c7771]"
+                              }`}
+                            >
+                              {isSelected ? "Active workspace" : "Switch workspace"}
+                            </span>
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <div className="w-5 h-5 rounded-full bg-[#fbe1d1] flex items-center justify-center shrink-0 ml-2 shadow-2xs">
+                            <Check className="w-3 h-3 text-[#5d2a1a] stroke-[2.5]" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Action Footer */}
+              <div className="pt-2 mt-2 border-t border-[#eee9df]">
+                {!isCreatingWorkspace ? (
+                  <div className="space-y-1">
+                    <button
+                      onClick={() => setIsCreatingWorkspace(true)}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[12px] text-xs font-medium text-[#5d2a1a] hover:bg-[#fbe1d1]/30 transition-colors cursor-pointer text-left group"
+                    >
+                      <div className="w-6 h-6 rounded-lg bg-[#fbe1d1]/50 group-hover:bg-[#fbe1d1] flex items-center justify-center shrink-0 transition-colors">
+                        <Plus className="w-3.5 h-3.5 text-[#5d2a1a]" />
+                      </div>
+                      <span>Create New Workspace</span>
+                    </button>
+
+                    <Link
+                      href="/dashboard/settings"
+                      onClick={() => setIsWorkspaceMenuOpen(false)}
+                      className="w-full flex items-center justify-between px-3 py-1.5 rounded-[12px] text-[11px] text-[#7c7771] hover:text-[#17191c] hover:bg-[#f8f6f1] transition-colors"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Settings className="w-3 h-3" />
+                        <span>Manage Workspaces</span>
+                      </span>
+                      <ExternalLink className="w-2.5 h-2.5 text-[#a3a099]" />
+                    </Link>
+                  </div>
+                ) : (
+                  <form onSubmit={handleCreateWorkspace} className="p-1 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-[#17191c]">New Workspace</span>
+                      <span className="text-[10px] text-[#7c7771]">Press Enter to create</span>
+                    </div>
+                    <input
+                      type="text"
+                      value={newWorkspaceName}
+                      onChange={(e) => setNewWorkspaceName(e.target.value)}
+                      placeholder="e.g. Executive Analytics"
+                      autoFocus
+                      maxLength={50}
+                      className="w-full px-3 py-1.5 text-xs rounded-[10px] bg-[#fbf9f5] border border-[#d8d2c5] focus:outline-none focus:border-[#5d2a1a] focus:ring-1 focus:ring-[#5d2a1a] text-[#17191c] placeholder:text-[#979799]"
+                    />
+                    {workspaceError && (
+                      <p className="text-[10px] text-rose-600">{workspaceError}</p>
+                    )}
+                    <div className="flex items-center justify-end gap-1.5 pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsCreatingWorkspace(false);
+                          setNewWorkspaceName("");
+                          setWorkspaceError(null);
+                        }}
+                        className="px-2.5 py-1 text-[11px] text-[#7c7771] hover:text-[#17191c] rounded-md transition-colors cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={!newWorkspaceName.trim() || isSubmittingWs}
+                        className="px-3 py-1 text-[11px] font-medium bg-[#5d2a1a] text-white rounded-md hover:bg-[#461e12] disabled:opacity-50 transition-colors cursor-pointer flex items-center gap-1 shadow-2xs"
+                      >
+                        {isSubmittingWs ? "Creating..." : "Create Workspace"}
+                      </button>
+                    </div>
+                  </form>
+                )}
               </div>
             </div>
           )}
