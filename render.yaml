@@ -1,0 +1,39 @@
+# Render Infrastructure-as-Code Blueprint for RicozViz
+# One-click deployment: https://render.com/deploy
+version: "1"
+
+services:
+  # ----------------------------------------------------------------------------
+  # FastAPI Enterprise Backend Web Service
+  # ----------------------------------------------------------------------------
+  - type: web
+    name: ricozviz-backend
+    runtime: docker
+    dockerfilePath: Backend/Dockerfile
+    dockerContext: Backend
+    plan: starter
+    region: oregon
+    healthCheckPath: /api/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ricozviz-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "1440"
+      - key: PORT
+        value: "8000"
+
+# ------------------------------------------------------------------------------
+# Managed PostgreSQL Database (or point DATABASE_URL to your Supabase instance)
+# ------------------------------------------------------------------------------
+databases:
+  - name: ricozviz-db
+    plan: starter
+    region: oregon
+    databaseName: ricozviz
+    user: postgres

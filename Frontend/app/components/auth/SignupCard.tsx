@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth-store";
-import { Lock, Mail, User, Building2, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { Lock, Mail, User, Building2, ArrowRight, Loader2, AlertCircle, Briefcase, Users } from "lucide-react";
 
 export default function SignupCard() {
   const router = useRouter();
@@ -14,7 +14,8 @@ export default function SignupCard() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [orgName, setOrgName] = useState("");
-  const [role, setRole] = useState("Admin");
+  const [companySize, setCompanySize] = useState("11-50");
+  const [industry, setIndustry] = useState("Software & Technology");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +24,7 @@ export default function SignupCard() {
     clearError();
 
     if (!fullName || !email || !password || !orgName) {
-      setValidationError("All fields are required to create an enterprise account.");
+      setValidationError("All required fields must be completed to provision your enterprise organization.");
       return;
     }
 
@@ -38,7 +39,9 @@ export default function SignupCard() {
         email,
         password,
         organization_name: orgName,
-        role,
+        company_size: companySize,
+        industry,
+        role: "Admin",
       });
       router.push("/dashboard");
     } catch {
@@ -47,7 +50,7 @@ export default function SignupCard() {
   };
 
   return (
-    <div className="relative z-10 w-full max-w-md p-8 sm:p-10 bg-[#ffffff] border border-[#ececec] rounded-[24px] shadow-artifact">
+    <div className="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-[#ffffff] border border-[#ececec] rounded-[24px] shadow-artifact">
       {/* Brand Header */}
       <div className="flex items-center justify-between mb-8">
         <Link href="/" className="flex items-center gap-2 group">
@@ -60,16 +63,16 @@ export default function SignupCard() {
         </Link>
 
         <span className="px-2.5 py-1 rounded-full bg-[#fbe1d1] text-[#5d2a1a] text-[11px] font-medium tracking-wide">
-          Enterprise Access
+          Multi-Tenant SaaS
         </span>
       </div>
 
       <div className="mb-6 space-y-1.5">
         <h1 className="text-2xl sm:text-3xl font-serif font-normal text-[#17191c] tracking-[-0.66px]">
-          Create enterprise workspace
+          Create enterprise organization
         </h1>
         <p className="text-xs sm:text-sm text-[#777b86]">
-          Start modeling and exploring data on your governed semantic canvas.
+          Provision your secure, isolated workspace and invite your team.
         </p>
       </div>
 
@@ -82,29 +85,69 @@ export default function SignupCard() {
 
       <form onSubmit={handleSubmit} className="space-y-3.5">
         <div>
-          <label className="block text-xs font-normal text-[#777b86] mb-1">Organization Name</label>
+          <label className="block text-xs font-normal text-[#777b86] mb-1">Company / Organization Name *</label>
           <div className="relative">
             <Building2 className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
             <input
               type="text"
               value={orgName}
               onChange={(e) => setOrgName(e.target.value)}
-              placeholder="Acme Global Corporation"
+              placeholder="e.g. Acme Corporation"
               className="w-full pl-10 pr-4 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] placeholder:text-[#a3a6af] outline-none transition-all"
               required
             />
           </div>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-normal text-[#777b86] mb-1">Company Size (Optional)</label>
+            <div className="relative">
+              <Users className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
+              <select
+                value={companySize}
+                onChange={(e) => setCompanySize(e.target.value)}
+                className="w-full pl-10 pr-3 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] outline-none transition-all"
+              >
+                <option value="1-10">1 - 10 employees</option>
+                <option value="11-50">11 - 50 employees</option>
+                <option value="51-200">51 - 200 employees</option>
+                <option value="201-1000">201 - 1,000 employees</option>
+                <option value="1000+">1,000+ enterprise</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-normal text-[#777b86] mb-1">Industry (Optional)</label>
+            <div className="relative">
+              <Briefcase className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
+              <select
+                value={industry}
+                onChange={(e) => setIndustry(e.target.value)}
+                className="w-full pl-10 pr-3 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] outline-none transition-all"
+              >
+                <option value="Software & Technology">Technology & SaaS</option>
+                <option value="Finance & Fintech">Finance & Banking</option>
+                <option value="Healthcare & Bio">Healthcare & Pharma</option>
+                <option value="E-Commerce & Retail">E-Commerce & Retail</option>
+                <option value="Manufacturing & Logistics">Logistics & Supply</option>
+                <option value="Media & Marketing">Media & Consulting</option>
+                <option value="Other">Other Enterprise</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
         <div>
-          <label className="block text-xs font-normal text-[#777b86] mb-1">Full Name</label>
+          <label className="block text-xs font-normal text-[#777b86] mb-1">Your Full Name *</label>
           <div className="relative">
             <User className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Jane Doe"
+              placeholder="Sarah Connor"
               className="w-full pl-10 pr-4 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] placeholder:text-[#a3a6af] outline-none transition-all"
               required
             />
@@ -112,14 +155,14 @@ export default function SignupCard() {
         </div>
 
         <div>
-          <label className="block text-xs font-normal text-[#777b86] mb-1">Work Email</label>
+          <label className="block text-xs font-normal text-[#777b86] mb-1">Work Email *</label>
           <div className="relative">
             <Mail className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="jane@acme.com"
+              placeholder="sarah@acme.com"
               className="w-full pl-10 pr-4 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] placeholder:text-[#a3a6af] outline-none transition-all"
               required
             />
@@ -127,7 +170,7 @@ export default function SignupCard() {
         </div>
 
         <div>
-          <label className="block text-xs font-normal text-[#777b86] mb-1">Password</label>
+          <label className="block text-xs font-normal text-[#777b86] mb-1">Password *</label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-2.5 w-4 h-4 text-[#a3a6af]" />
             <input
@@ -141,19 +184,9 @@ export default function SignupCard() {
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs font-normal text-[#777b86] mb-1">Initial User Role</label>
-          <select
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-            className="w-full px-3 py-2 bg-[#f2f2f3] hover:bg-[#ededee] focus:bg-[#ffffff] border border-transparent focus:border-[#17191c] rounded-[16px] text-xs sm:text-sm text-[#17191c] outline-none transition-all"
-          >
-            <option value="Admin">Administrator (Full Access)</option>
-            <option value="Analyst">Data Analyst (Create & Edit)</option>
-            <option value="Explorer">Data Explorer (View & Filter)</option>
-            <option value="Viewer">Dashboard Viewer (Read Only)</option>
-          </select>
-        </div>
+        <p className="text-[11px] text-[#777b86] pt-1">
+          As the organization creator, you will automatically be granted <span className="font-semibold text-[#17191c]">Organization Owner & Admin</span> privileges.
+        </p>
 
         <button
           type="submit"
@@ -163,11 +196,11 @@ export default function SignupCard() {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin text-white" />
-              <span>Provisioning workspace...</span>
+              <span>Provisioning tenant workspace...</span>
             </>
           ) : (
             <>
-              <span>Create account & workspace</span>
+              <span>Sign Up & Launch Workspace</span>
               <ArrowRight className="w-4 h-4" />
             </>
           )}
@@ -175,7 +208,7 @@ export default function SignupCard() {
       </form>
 
       <div className="mt-6 text-center text-xs text-[#777b86]">
-        Already have an account?{" "}
+        Already have an enterprise account?{" "}
         <Link href="/auth/login" className="text-[#17191c] font-medium hover:underline">
           Sign in
         </Link>

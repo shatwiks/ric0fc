@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+uploads/*
+!uploads/.gitkeep
+test_*.py
+verify_*.py
+audit_*.py
+scratch/

@@ -6,10 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.orm import selectinload
 
-from app.models.auth import User, Organization, Workspace, UserRole
+from app.models.auth import User, Organization, Workspace, UserRole, OrganizationMember
 from app.models.data import Dataset
 from app.models.dashboard import Dashboard
-from app.models.governance import AuditLog
+from app.models.governance import AuditLog, Report
+from app.models.intelligence import AIConversation, PulseInsight
 from app.schemas.governance import (
     UserGovernanceResponse,
     UserRoleUpdateRequest,
@@ -18,6 +19,11 @@ from app.schemas.governance import (
     AuditLogResponse,
     GovernanceOverviewResponse,
     RolePermissionInfo,
+)
+from app.schemas.auth import (
+    OrganizationOverviewResponse,
+    OrganizationUpdateRequest,
+    WorkspaceResponse,
 )
 from app.utils.security import hash_password, ROLE_PERMISSIONS
 from app.services.audit_service import log_audit_event
@@ -74,6 +80,15 @@ class GovernanceService:
             is_active=True,
         )
         db.add(new_user)
+        await db.flush()
+
+        member = OrganizationMember(
+            organization_id=organization_id,
+            user_id=new_user.id,
+            role=new_user.role,
+            is_active=True,
+        )
+        db.add(member)
         await db.commit()
         await db.refresh(new_user)
 
@@ -110,7 +125,7 @@ class GovernanceService:
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in your organization.")
 
         # Prevent demoting last active Admin in org
         if user.role == UserRole.ADMIN and new_role != UserRole.ADMIN:
@@ -123,6 +138,17 @@ class GovernanceService:
 
         old_role = user.role.value
         user.role = new_role
+
+        # Update OrganizationMember if present
+        mem_stmt = select(OrganizationMember).where(
+            OrganizationMember.user_id == user.id,
+            OrganizationMember.organization_id == organization_id,
+        )
+        mem_res = await db.execute(mem_stmt)
+        mem = mem_res.scalar_one_or_none()
+        if mem:
+            mem.role = new_role
+
         await db.commit()
         await db.refresh(user)
 
@@ -159,7 +185,7 @@ class GovernanceService:
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in your organization.")
 
         if user.id == current_admin.id and not is_active:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Administrators cannot deactivate their own account.")
@@ -181,6 +207,16 @@ class GovernanceService:
                 )
 
         user.is_active = is_active
+
+        mem_stmt = select(OrganizationMember).where(
+            OrganizationMember.user_id == user.id,
+            OrganizationMember.organization_id == organization_id,
+        )
+        mem_res = await db.execute(mem_stmt)
+        mem = mem_res.scalar_one_or_none()
+        if mem:
+            mem.is_active = is_active
+
         await db.commit()
         await db.refresh(user)
 
@@ -216,7 +252,7 @@ class GovernanceService:
         user = result.scalar_one_or_none()
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found in your organization.")
 
         if user.id == current_admin.id:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="You cannot delete your own account.")
@@ -287,6 +323,94 @@ class GovernanceService:
             total_audit_logs=audit_count,
             security_posture="Enterprise Governed (SOC2 Active)",
         )
+
+    @staticmethod
+    async def get_organization_overview(db: AsyncSession, organization_id: uuid.UUID) -> OrganizationOverviewResponse:
+        """Calculates live multi-tenant overview metrics across all workspaces of the organization."""
+        org_stmt = (
+            select(Organization)
+            .options(selectinload(Organization.workspaces))
+            .where(Organization.id == organization_id)
+        )
+        res = await db.execute(org_stmt)
+        org = res.scalar_one_or_none()
+        if not org:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found.")
+
+        # Workspace IDs
+        ws_ids = [w.id for w in org.workspaces] if org.workspaces else []
+
+        # Users
+        u_tot = await db.scalar(select(func.count(User.id)).where(User.organization_id == organization_id)) or 0
+        u_act = await db.scalar(select(func.count(User.id)).where(User.organization_id == organization_id, User.is_active == True)) or 0
+
+        # Cross-workspace metrics
+        if ws_ids:
+            d_tot = await db.scalar(select(func.count(Dataset.id)).where(Dataset.workspace_id.in_(ws_ids))) or 0
+            dash_tot = await db.scalar(select(func.count(Dashboard.id)).where(Dashboard.workspace_id.in_(ws_ids))) or 0
+            rep_tot = await db.scalar(select(func.count(Report.id)).where(Report.workspace_id.in_(ws_ids))) or 0
+            ai_tot = await db.scalar(select(func.count(AIConversation.id)).where(AIConversation.workspace_id.in_(ws_ids))) or 0
+            pulse_tot = await db.scalar(select(func.count(PulseInsight.id)).where(PulseInsight.workspace_id.in_(ws_ids))) or 0
+        else:
+            d_tot = dash_tot = rep_tot = ai_tot = pulse_tot = 0
+
+        return OrganizationOverviewResponse(
+            id=org.id,
+            name=org.name,
+            slug=org.slug,
+            plan=org.plan,
+            company_size=org.company_size,
+            industry=org.industry,
+            workspaces=[WorkspaceResponse.model_validate(w) for w in (org.workspaces or [])],
+            total_users=u_tot,
+            active_users=u_act,
+            total_datasets=d_tot,
+            total_dashboards=dash_tot,
+            total_reports=rep_tot,
+            total_ai_conversations=ai_tot,
+            total_pulse_insights=pulse_tot,
+            created_at=org.created_at,
+        )
+
+    @staticmethod
+    async def update_organization(
+        db: AsyncSession,
+        organization_id: uuid.UUID,
+        data: OrganizationUpdateRequest,
+        current_admin: User,
+        workspace_id: uuid.UUID,
+    ) -> OrganizationOverviewResponse:
+        stmt = (
+            select(Organization)
+            .options(selectinload(Organization.workspaces))
+            .where(Organization.id == organization_id)
+        )
+        res = await db.execute(stmt)
+        org = res.scalar_one_or_none()
+        if not org:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Organization not found.")
+
+        if data.name:
+            org.name = data.name.strip()
+        if data.company_size is not None:
+            org.company_size = data.company_size
+        if data.industry is not None:
+            org.industry = data.industry
+
+        await db.commit()
+        await db.refresh(org)
+
+        await log_audit_event(
+            db=db,
+            action="governance:organization_update",
+            resource_type="organization",
+            resource_id=str(org.id),
+            user_id=current_admin.id,
+            workspace_id=workspace_id,
+            details={"name": org.name, "company_size": org.company_size, "industry": org.industry},
+        )
+
+        return await GovernanceService.get_organization_overview(db, organization_id)
 
     @staticmethod
     def get_role_definitions() -> List[RolePermissionInfo]:

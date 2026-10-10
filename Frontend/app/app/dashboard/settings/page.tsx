@@ -68,6 +68,16 @@ export default function SettingsPage() {
             <span className="text-[#17191c] font-semibold">PostgreSQL RBAC + JWT</span>
           </div>
         </div>
+
+        <div className="pt-2">
+          <a
+            href="/dashboard/settings/organization"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#5d2a1a] text-white text-xs font-semibold hover:bg-[#4a2114] transition-colors shadow-2xs"
+          >
+            <Building2 className="h-3.5 w-3.5" />
+            Manage Organization, Members & Invites →
+          </a>
+        </div>
       </div>
     </div>
   );

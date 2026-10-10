@@ -23,7 +23,64 @@ export interface OrganizationResponse {
   name: string;
   slug: string;
   plan: string;
+  company_size?: string;
+  industry?: string;
   workspaces: WorkspaceResponse[];
+}
+
+export interface OrganizationSummary {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  role: string;
+  company_size?: string;
+  industry?: string;
+  workspaces: WorkspaceResponse[];
+}
+
+export interface OrganizationInvitation {
+  id: string;
+  organization_id: string;
+  organization_name: string;
+  workspace_id?: string;
+  workspace_name?: string;
+  email: string;
+  role: string;
+  token: string;
+  status: string;
+  invited_by_name?: string;
+  created_at: string;
+  expires_at: string;
+  invite_url: string;
+}
+
+export interface InvitationPublicDetails {
+  token: string;
+  email: string;
+  organization_name: string;
+  role: string;
+  invited_by_name?: string;
+  is_valid: boolean;
+  expires_at: string;
+}
+
+export interface OrganizationOverviewResponse {
+  id: string;
+  name: string;
+  slug: string;
+  plan: string;
+  company_size?: string;
+  industry?: string;
+  workspaces: WorkspaceResponse[];
+  total_users: number;
+  active_users: number;
+  total_datasets: number;
+  total_dashboards: number;
+  total_reports: number;
+  total_ai_conversations: number;
+  total_pulse_insights: number;
+  created_at: string;
 }
 
 export interface TokenResponse {
@@ -38,12 +95,14 @@ export interface TokenResponse {
   organization_name: string;
   workspace_id: string;
   workspace_name: string;
+  organizations?: OrganizationSummary[];
 }
 
 export interface AuthMeResponse {
   user: UserResponse;
   organization: OrganizationResponse;
   workspace: WorkspaceResponse;
+  organizations?: OrganizationSummary[];
   permissions: string[];
 }
 
@@ -407,6 +466,10 @@ class ApiClient {
       if (token) {
         headers["Authorization"] = `Bearer ${token}`;
       }
+      const activeWs = localStorage.getItem("ricozviz_active_workspace_id");
+      if (activeWs) {
+        headers["X-Workspace-Id"] = activeWs;
+      }
     }
     return headers;
   }
@@ -485,6 +548,28 @@ class ApiClient {
     return this.request<WorkspaceResponse>("/auth/workspaces", {
       method: "POST",
       body: JSON.stringify({ name }),
+    });
+  }
+
+  async switchContext(organizationId: string, workspaceId?: string): Promise<TokenResponse> {
+    return this.request<TokenResponse>("/auth/switch-context", {
+      method: "POST",
+      body: JSON.stringify({ organization_id: organizationId, workspace_id: workspaceId }),
+    });
+  }
+
+  async listOrganizations(): Promise<OrganizationSummary[]> {
+    return this.request<OrganizationSummary[]>("/auth/organizations");
+  }
+
+  async getPublicInvitation(token: string): Promise<InvitationPublicDetails> {
+    return this.request<InvitationPublicDetails>(`/auth/invitations/${token}`);
+  }
+
+  async acceptInvitation(token: string, data: { full_name: string; password: string }): Promise<TokenResponse> {
+    return this.request<TokenResponse>(`/auth/invitations/${token}/accept`, {
+      method: "POST",
+      body: JSON.stringify(data),
     });
   }
 
@@ -832,6 +917,48 @@ class ApiClient {
     if (params?.offset) q.append("offset", params.offset.toString());
     const queryStr = q.toString() ? `?${q.toString()}` : "";
     return this.request<AuditLog[]>(`/governance/audit-logs${queryStr}`);
+  }
+
+  async getOrganizationOverview(): Promise<OrganizationOverviewResponse> {
+    return this.request<OrganizationOverviewResponse>("/governance/organization");
+  }
+
+  async updateOrganization(data: {
+    name?: string;
+    company_size?: string;
+    industry?: string;
+  }): Promise<OrganizationOverviewResponse> {
+    return this.request<OrganizationOverviewResponse>("/governance/organization", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async listInvitations(): Promise<OrganizationInvitation[]> {
+    return this.request<OrganizationInvitation[]>("/governance/invitations");
+  }
+
+  async createInvitation(data: {
+    email: string;
+    role: string;
+    workspace_id?: string;
+  }): Promise<OrganizationInvitation> {
+    return this.request<OrganizationInvitation>("/governance/invitations", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  }
+
+  async resendInvitation(id: string): Promise<OrganizationInvitation> {
+    return this.request<OrganizationInvitation>(`/governance/invitations/${id}/resend`, {
+      method: "POST",
+    });
+  }
+
+  async revokeInvitation(id: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/governance/invitations/${id}/revoke`, {
+      method: "POST",
+    });
   }
 
   // Day 6 AI Intelligence Endpoints

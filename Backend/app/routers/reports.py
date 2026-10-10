@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.config import settings
-from app.models.auth import User
+from app.models.auth import User, Workspace
 from app.schemas.report import (
     ReportExportCSVRequest,
     ReportExportPDFRequest,
@@ -15,7 +15,7 @@ from app.schemas.report import (
     ReportScheduleCreate,
     ReportScheduleResponse,
 )
-from app.services.auth_service import get_current_user, require_permission
+from app.services.auth_service import get_current_user, get_current_workspace, require_permission
 from app.services.report_service import ReportService
 
 router = APIRouter(prefix="/reports", tags=["Export Centre & Reports"])
@@ -24,16 +24,13 @@ router = APIRouter(prefix="/reports", tags=["Export Centre & Reports"])
 async def export_csv(
     request: ReportExportCSVRequest,
     current_user: User = Depends(require_permission("export:csv")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
     file_path, filename, _, _ = await ReportService.export_csv(
         db=db,
         request=request,
-        workspace_id=primary_workspace.id,
+        workspace_id=current_workspace.id,
         user=current_user,
     )
 
@@ -51,16 +48,13 @@ async def export_csv(
 async def export_pdf(
     request: ReportExportPDFRequest,
     current_user: User = Depends(require_permission("export:pdf")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
     file_path, filename, _, _ = await ReportService.export_pdf(
         db=db,
         request=request,
-        workspace_id=primary_workspace.id,
+        workspace_id=current_workspace.id,
         user=current_user,
     )
 
@@ -77,29 +71,22 @@ async def export_pdf(
 @router.get("", response_model=List[ReportResponse])
 async def list_reports(
     current_user: User = Depends(get_current_user),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        return []
-
-    return await ReportService.list_reports(db, primary_workspace.id)
+    return await ReportService.list_reports(db, current_workspace.id)
 
 @router.get("/{report_id}/download")
 async def download_report(
     report_id: uuid.UUID,
     current_user: User = Depends(require_permission("export:csv")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
-    report = await ReportService.get_report(db, report_id, primary_workspace.id)
+    report = await ReportService.get_report(db, report_id, current_workspace.id)
     if not report.file_path or not os.path.exists(report.file_path):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report file no longer exists on disk.")
 
-    # Storage boundary escape protection
     upload_root = os.path.abspath(settings.UPLOAD_DIR)
     canonical_file = os.path.abspath(report.file_path)
     if not canonical_file.startswith(upload_root):
@@ -120,47 +107,35 @@ async def download_report(
 async def delete_report(
     report_id: uuid.UUID,
     current_user: User = Depends(require_permission("export:csv")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
-    return await ReportService.delete_report(db, report_id, primary_workspace.id, current_user)
+    return await ReportService.delete_report(db, report_id, current_workspace.id, current_user)
 
 # Report Schedules
 @router.get("/schedules", response_model=List[ReportScheduleResponse])
 @router.get("/schedules/all", response_model=List[ReportScheduleResponse])
 async def list_report_schedules(
     current_user: User = Depends(get_current_user),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        return []
-
-    return await ReportService.list_schedules(db, primary_workspace.id)
+    return await ReportService.list_schedules(db, current_workspace.id)
 
 @router.post("/schedules", response_model=ReportScheduleResponse, status_code=status.HTTP_201_CREATED)
 async def create_report_schedule(
     data: ReportScheduleCreate,
     current_user: User = Depends(require_permission("schedule:reports")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
-    return await ReportService.create_schedule(db, data, primary_workspace.id, current_user)
+    return await ReportService.create_schedule(db, data, current_workspace.id, current_user)
 
 @router.delete("/schedules/{schedule_id}")
 async def delete_report_schedule(
     schedule_id: uuid.UUID,
     current_user: User = Depends(require_permission("schedule:reports")),
+    current_workspace: Workspace = Depends(get_current_workspace),
     db: AsyncSession = Depends(get_db),
 ):
-    primary_workspace = current_user.organization.workspaces[0] if current_user.organization.workspaces else None
-    if not primary_workspace:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No active workspace found.")
-
-    return await ReportService.delete_schedule(db, schedule_id, primary_workspace.id, current_user)
+    return await ReportService.delete_schedule(db, schedule_id, current_workspace.id, current_user)

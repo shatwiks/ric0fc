@@ -124,9 +124,11 @@ class DatasetService:
         if not dataset_name:
             dataset_name = "Enterprise Dataset"
 
-        # Unique file path
+        # Unique file path segregated by tenant organization and workspace
         unique_filename = f"{uuid.uuid4().hex}_{sanitized}"
-        dest_path = os.path.join(settings.UPLOAD_DIR, unique_filename)
+        tenant_dir = os.path.join(settings.UPLOAD_DIR, str(user.organization_id), str(workspace_id))
+        os.makedirs(tenant_dir, exist_ok=True)
+        dest_path = os.path.join(tenant_dir, unique_filename)
 
         # 2. Write file to disk with size check
         total_size = 0
