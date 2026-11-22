@@ -19,10 +19,16 @@ services:
         fromDatabase:
           name: ricozviz-db
           property: connectionString
+      - key: ENVIRONMENT
+        value: production
+      - key: ENABLE_DOCS
+        value: "false"
+      - key: SEED_DEMO_USERS
+        value: "true"
       - key: SECRET_KEY
         generateValue: true
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://ricozviz.vercel.app"
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: "1440"
       - key: PORT

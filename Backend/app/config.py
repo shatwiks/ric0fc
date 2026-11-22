@@ -1,5 +1,5 @@
 from pydantic_settings import BaseSettings
-from pydantic import field_validator
+from pydantic import field_validator, model_validator
 from typing import List, Union
 import os
 
@@ -7,6 +7,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "RicozViz Analytics Platform"
     VERSION: str = "1.0.0"
     API_PREFIX: str = "/api"
+    ENVIRONMENT: str = "development"
+    ENABLE_DOCS: bool = True
+    SEED_DEMO_USERS: bool = True
     PORT: int = int(os.getenv("PORT", "8000"))
     
     # Database
@@ -25,6 +28,7 @@ class Settings(BaseSettings):
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
+        "https://ricozviz.vercel.app",
     ]
     
     # File uploads
@@ -61,6 +65,21 @@ class Settings(BaseSettings):
                 return ["*"]
             return [origin.strip() for origin in v.split(",") if origin.strip()]
         return v
+
+    @model_validator(mode="after")
+    def validate_production_security(self) -> "Settings":
+        if (self.ENVIRONMENT or "").lower() == "production":
+            insecure = {
+                "ricozviz-enterprise-secret-key-super-secure-production-2026",
+                "secret",
+                "changeme",
+                "default",
+            }
+            if not self.SECRET_KEY or self.SECRET_KEY in insecure or len(self.SECRET_KEY) < 32:
+                raise ValueError(
+                    "CRITICAL SECURITY VIOLATION: SECRET_KEY must be set to a strong >=32 char secret in production."
+                )
+        return self
 
     class Config:
         env_file = ".env"

@@ -127,8 +127,9 @@ async def lifespan(app: FastAPI):
             pass
     print("[RicozViz] Database tables verified.")
     
-    # Seed initial demo organization & roles if empty
-    await seed_initial_demo_users()
+    # Seed initial demo organization & roles if enabled
+    if settings.SEED_DEMO_USERS:
+        await seed_initial_demo_users()
     
     yield
     
@@ -136,12 +137,46 @@ async def lifespan(app: FastAPI):
     print("[RicozViz] Closing database connections...")
     await engine.dispose()
 
+_docs_enabled = settings.ENABLE_DOCS and settings.ENVIRONMENT.lower() != "production"
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     description="Enterprise Analytics & Data Intelligence Platform API",
+    docs_url="/docs" if _docs_enabled else None,
+    redoc_url="/redoc" if _docs_enabled else None,
+    openapi_url="/openapi.json" if _docs_enabled else None,
     lifespan=lifespan,
 )
+
+# Per-IP auth rate limiter (blocks credential stuffing & signup spam)
+import time as _time
+_AUTH_BUCKETS: dict[str, tuple[int, float]] = {}
+
+@app.middleware("http")
+async def auth_rate_limit_middleware(request: Request, call_next):
+    if settings.ENVIRONMENT.lower() != "test" and request.method == "POST" and request.url.path in (
+        f"{settings.API_PREFIX}/auth/login",
+        f"{settings.API_PREFIX}/auth/signup",
+    ):
+        now = _time.monotonic()
+        ip = (request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else "unknown"))
+        key = f"{ip}:{request.url.path}"
+        if len(_AUTH_BUCKETS) > 10000:
+            expired = [k for k, (_, ts) in _AUTH_BUCKETS.items() if now - ts >= 60.0]
+            for k in expired:
+                _AUTH_BUCKETS.pop(k, None)
+        count, start = _AUTH_BUCKETS.get(key, (0, now))
+        if now - start >= 60.0:
+            count, start = 0, now
+        count += 1
+        _AUTH_BUCKETS[key] = (count, start)
+        if count > 20:
+            return JSONResponse(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                content={"detail": "Too many authentication attempts. Please retry in a minute."},
+            )
+    return await call_next(request)
 
 # Security Headers Middleware
 @app.middleware("http")
@@ -152,15 +187,19 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    if settings.ENVIRONMENT.lower() == "production":
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
     return response
 
-# CORS middleware
+# CORS middleware (never combine wildcard '*' with allow_credentials=True)
+_cors_origins = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+_allow_credentials = "*" not in _cors_origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials=_allow_credentials,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-    allow_headers=["*"],
+    allow_headers=["Authorization", "Content-Type", "X-Workspace-Id", "X-Requested-With", "Accept"],
 )
 
 # Exception handling

@@ -1,3 +1,4 @@
+import html
 import os
 import uuid
 import time
@@ -31,6 +32,19 @@ from app.services.dataset_service import DatasetService
 
 REPORTS_DIR = os.path.join(settings.UPLOAD_DIR, "reports")
 os.makedirs(REPORTS_DIR, exist_ok=True)
+
+
+def _safe_sql_storage_path(file_path: str) -> str:
+    """Resolve file_path, enforce confinement inside settings.UPLOAD_DIR, and escape single quotes for DuckDB."""
+    base_real = os.path.realpath(settings.UPLOAD_DIR)
+    target_real = os.path.realpath(file_path)
+    if os.path.commonpath([base_real, target_real]) != base_real:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid dataset storage path outside upload sandbox.",
+        )
+    return target_real.replace("\\", "/").replace("'", "''")
+
 
 class ReportService:
     @staticmethod
@@ -75,14 +89,14 @@ class ReportService:
                         where_clauses.append(f'"{clean_col}" = ?')
                         params.append(str(val))
 
-            clean_path = normalized_path.replace("'", "''")
+            clean_path = _safe_sql_storage_path(dataset.file_path)
             sql = f"SELECT * FROM read_csv_auto('{clean_path}')"
             if where_clauses:
                 sql += f" WHERE {' AND '.join(where_clauses)}"
 
             con = duckdb.connect(":memory:")
             try:
-                dest_sql = dest_path.replace("\\", "/").replace("'", "''")
+                dest_sql = _safe_sql_storage_path(dest_path)
                 if params:
                     con.execute(f"COPY ({sql}) TO '{dest_sql}' (HEADER, DELIMITER ',')", params)
                 else:
@@ -112,11 +126,11 @@ class ReportService:
 
             if target_w and target_w.dataset_id:
                 dataset = await DatasetService.get_dataset(db, target_w.dataset_id, workspace_id)
-                normalized_path = dataset.file_path.replace("\\", "/")
+                safe_src = _safe_sql_storage_path(dataset.file_path)
+                safe_dest = _safe_sql_storage_path(dest_path)
                 con = duckdb.connect(":memory:")
                 try:
-                    dest_sql = dest_path.replace("\\", "/")
-                    con.execute(f"COPY (SELECT * FROM read_csv_auto('{normalized_path}')) TO '{dest_sql}' (HEADER, DELIMITER ',')")
+                    con.execute(f"COPY (SELECT * FROM read_csv_auto('{safe_src}')) TO '{safe_dest}' (HEADER, DELIMITER ',')")
                 finally:
                     con.close()
             else:
@@ -314,11 +328,11 @@ class ReportService:
             elements.append(Paragraph("<i>No active widgets currently attached to this dashboard canvas.</i>", subtitle_style))
         else:
             for idx, w in enumerate(dashboard.widgets, 1):
-                chart_badge = w.chart_type.upper()
-                elements.append(Paragraph(f"<b>{idx}. {w.title}</b> &nbsp;&nbsp;<font size=8 color='#5d2a1a'>[{chart_badge}]</font>", meta_label_style))
+                chart_badge = html.escape(w.chart_type.upper())
+                elements.append(Paragraph(f"<b>{idx}. {html.escape(w.title or '')}</b> &nbsp;&nbsp;<font size=8 color='#5d2a1a'>[{chart_badge}]</font>", meta_label_style))
                 
-                dim_str = ", ".join(w.dimensions) if w.dimensions else "None"
-                meas_str = ", ".join([f"{m.get('agg', 'sum')}({m.get('column', '*')})" for m in w.measures]) if w.measures else "None"
+                dim_str = html.escape(", ".join(w.dimensions) if w.dimensions else "None")
+                meas_str = html.escape(", ".join([f"{m.get('agg', 'sum')}({m.get('column', '*')})" for m in w.measures]) if w.measures else "None")
                 elements.append(Paragraph(f"<b>Dimensions:</b> {dim_str} &nbsp;|&nbsp; <b>Measures:</b> {meas_str}", meta_val_style))
                 elements.append(Spacer(1, 4))
 
@@ -327,15 +341,15 @@ class ReportService:
                     try:
                         dataset = await DatasetService.get_dataset(db, w.dataset_id, workspace_id)
                         if dataset.file_path and os.path.exists(dataset.file_path):
-                            norm_path = dataset.file_path.replace("\\", "/")
+                            safe_src = _safe_sql_storage_path(dataset.file_path)
                             con = duckdb.connect(":memory:")
                             try:
-                                sample_res = con.execute(f"SELECT * FROM read_csv_auto('{norm_path}') LIMIT 4").fetchall()
+                                sample_res = con.execute(f"SELECT * FROM read_csv_auto('{safe_src}') LIMIT 4").fetchall()
                                 cols = [desc[0] for desc in con.description][:6]  # Limit to 6 cols for PDF width
                                 
-                                table_rows = [[Paragraph(f"<b>{c}</b>", table_header_style) for c in cols]]
+                                table_rows = [[Paragraph(f"<b>{html.escape(str(c))}</b>", table_header_style) for c in cols]]
                                 for r in sample_res:
-                                    row_cells = [Paragraph(str(val if val is not None else ""), table_cell_style) for val in r[:6]]
+                                    row_cells = [Paragraph(html.escape(str(val if val is not None else "")), table_cell_style) for val in r[:6]]
                                     table_rows.append(row_cells)
 
                                 col_w = 530 / len(cols)
@@ -349,8 +363,8 @@ class ReportService:
                                 elements.append(sample_table)
                             finally:
                                 con.close()
-                    except Exception as e:
-                        elements.append(Paragraph(f"<font color='#a0aec0'>Preview unavailable ({str(e)})</font>", meta_val_style))
+                    except Exception:
+                        elements.append(Paragraph("<font color='#a0aec0'>Preview unavailable</font>", meta_val_style))
 
                 elements.append(Spacer(1, 10))
 
